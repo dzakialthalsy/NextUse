@@ -34,12 +34,6 @@ cd dzakialthalsy/nextuse/NextUse-fb508e3c113c11c256251280b1f75af8058ce735
 
 ### 2\. Konfigurasi Environment (Lingkungan)
 
-Buat salinan file konfigurasi *environment* dari contoh yang disediakan:
-
-```bash
-cp .env.example .env
-```
-
 Pastikan konfigurasi koneksi basis data di file `.env` sudah sesuai dengan layanan `mysql` di `docker-compose.yml`.
 
 | Variabel `.env` | Nilai yang Diharapkan | Keterangan |
