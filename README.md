@@ -1,7 +1,3 @@
-Tentu, saya akan membuatkan panduan `README.md` yang komprehensif untuk proyek Laravel Anda dengan integrasi Docker. Panduan ini mencakup langkah-langkah *setup* proyek, konfigurasi Docker, dan perintah untuk menjalankan aplikasi.
-
------
-
 # Proyek Laravel dengan Docker (NextUse)
 
 \<p align="center"\>\<a href="[https://laravel.com](https://laravel.com)" target="\_blank"\>\<img src="[https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)" width="400" alt="Laravel Logo"\>\</a\>\</p\>
