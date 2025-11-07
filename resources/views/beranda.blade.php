@@ -96,9 +96,9 @@ $categories = ['Semua', 'Elektronik', 'Perabotan', 'Pakaian', 'Buku', 'OlahRaga'
                     </select>
                     <select id="sortFilter" class="px-3 py-2 bg-gray-100 text-gray-900 text-sm rounded-lg border-none focus:ring-teal-500 focus:border-teal-500">
                         <option value="terbaru">Terbaru</option>
-                        <option value="termahal">Minggu Ini</option>
-                        <option value="termahal">Bulan Ini</option>
-                        <option value="termahal">Tahun Ini</option>
+                        <option value="minggu ini">Minggu Ini</option>
+                        <option value="bulan ini">Bulan Ini</option>
+                        <option value="tahun ini">Tahun Ini</option>
                     </select>
                 </div>
             </div>

@@ -42,13 +42,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 1. Sortir Produk
-        if (selectedSort === 'termurah') {
+        if (selectedSort === 'tahun ini') {
             // Perlu menggunakan data-price (saat ini harga dummy hanya ada di PHP, perlu dipindahkan ke data-attribute)
             // Karena data-price di sini hanya dummy, kita lewati sorting harga di frontend.
             // Jika harga benar-benar diperlukan, pastikan data-price ada di HTML.
             // Contoh implementasi sorting (berdasarkan ID/index dummy):
             filteredProducts.sort((a, b) => parseInt(a.dataset.price) - parseInt(b.dataset.price));
-        } else if (selectedSort === 'termahal') {
+        } else if (selectedSort === 'bulan ini') {
             filteredProducts.sort((a, b) => parseInt(b.dataset.price) - parseInt(a.dataset.price));
         } else if (selectedSort === 'terbaru') {
             // Asumsi data-time ada dan berisi timestamp (untuk data dummy di sini, kita biarkan urutan bawaan HTML)
