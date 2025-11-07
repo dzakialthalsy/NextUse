@@ -20,26 +20,6 @@ $categories = ['Semua', 'Elektronik', 'Perabotan', 'Pakaian', 'Buku', 'OlahRaga'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextUse | Jual Beli Barang Bekas</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        .hero-bg {
-            background-image: linear-gradient(135deg, #F0FDFA 0%, #ECFDF5 100%);
-        }
-        .main-gradient {
-            background: linear-gradient(90deg, #00BBA7 0%, #009966 100%);
-        }
-        .product-image-bg {
-             background-image: linear-gradient(135deg, #CBFBF1 0%, #D0FAE5 100%);
-        }
-        .text-gradient {
-            /* Untuk Heading 1 */
-            background: linear-gradient(90deg, #009689 0%, #009966 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -116,8 +96,10 @@ $categories = ['Semua', 'Elektronik', 'Perabotan', 'Pakaian', 'Buku', 'OlahRaga'
                     </select>
                     <select id="sortFilter" class="px-3 py-2 bg-gray-100 text-gray-900 text-sm rounded-lg border-none focus:ring-teal-500 focus:border-teal-500">
                         <option value="terbaru">Terbaru</option>
-                        <option value="termurah">Termurah</option>
-                        <option value="termahal">Termahal</option>
+                        <option value="termurah">Terlama</option>
+                        <option value="termahal">Minggu Ini</option>
+                        <option value="termahal">Bulan Ini</option>
+                        <option value="termahal">Tahun Ini</option>
                     </select>
                 </div>
             </div>
