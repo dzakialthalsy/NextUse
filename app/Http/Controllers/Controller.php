@@ -4,5 +4,5 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
-    //dzaki
+    //travis scott fdafa
 }
