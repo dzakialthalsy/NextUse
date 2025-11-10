@@ -26,11 +26,11 @@ return new class extends Migration
             $table->string('organization_id')->nullable()->comment('Nomor Induk Organisasi atau NIB');
             $table->string('email')->unique();
             $table->string('phone');
-            $table->string('contact_person')->comment('Nama Penanggung Jawab/Contact Person');
+            $table->string('contact_person');
             $table->string('password');
-            $table->string('document_path')->nullable()->comment('Path ke file Surat Penugasan/Surat Kuasa');
+            $table->string('document_path')->nullable()->comment('Path file surat penugasan/kuasa');
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->boolean('is_active')->default(false)->comment('Status aktivasi akun');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

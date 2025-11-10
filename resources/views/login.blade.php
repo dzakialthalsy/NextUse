@@ -17,33 +17,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-white flex flex-col">
-    <!-- Header -->
-    <header class="bg-white border-b border-[rgba(0,0,0,0.1)]">
-        <div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gradient-to-r from-[#00bba7] to-[#009966] rounded-lg flex items-center justify-center">
-                    <span class="text-white">N</span>
-                </div>
-                <span class="text-neutral-950">NextUse</span>
-            </div>
-            <nav class="hidden md:flex items-center gap-6 text-[#717182]">
-                <a href="#" class="hover:text-neutral-950">Browse</a>
-                <a href="#" class="hover:text-neutral-950">Post Item</a>
-                <a href="#" class="hover:text-neutral-950">Messages</a>
-                <a href="#" class="hover:text-neutral-950">Profile</a>
-            </nav>
-            <div class="flex items-center gap-3">
-                <button class="px-3 py-1.5 text-sm text-neutral-950 hover:bg-gray-50 rounded-lg">
-                    Masuk
-                </button>
-                <button class="px-3 py-1.5 text-sm text-white bg-gradient-to-r from-[#00bba7] to-[#009966] rounded-lg hover:opacity-90">
-                    Daftar
-                </button>
-            </div>
-        </div>
-    </header>
-
+<body class="min-h-screen bg-gradient-to-br from-teal-50 via-green-50 to-emerald-50 flex flex-col">
     <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center px-6 py-12">
         <div class="w-full max-w-[520px]">
