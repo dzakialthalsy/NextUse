@@ -33,10 +33,10 @@ $categories = ['Semua', 'Elektronik', 'Perabotan', 'Pakaian', 'Buku', 'OlahRaga'
             </a>
             
             <nav class="hidden md:flex space-x-6 text-sm font-normal">
-                <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Browse</a>
+                <a href="#" class="text-gray-900 transition duration-150 border-b-2 border-teal-500 font-medium">Browse</a>
                 <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Post Item</a>
                 <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Messages</a>
-                <a href="#" class="text-gray-900 transition duration-150 border-b-2 border-teal-500 font-medium">Profile</a>
+                <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Profile</a>
             </nav>
 
             <div class="flex items-center space-x-3">
