@@ -319,10 +319,10 @@
                                 for="agreement"
                                 class="text-sm text-neutral-950 cursor-pointer leading-5 flex-1"
                             >
-                                Saya menyatakan data organisasi valid & setuju dengan{' '}
-                                <a href="#" class="text-[#009689] underline hover:text-teal-700">
+                                Saya menyatakan data organisasi valid & setuju dengan
+                                <a href="{{ route('syarat-ketentuan') }}" target="_blank" class="text-[#009689] underline hover:text-teal-700">
                                     Syarat & Ketentuan
-                                </a>{' '}
+                                </a>
                                 NextUse
                                 <span class="text-[#d4183d] ml-1">*</span>
                             </label>
@@ -359,7 +359,7 @@
                             </a>
                         </p>
                         <p class="text-sm text-center">
-                            <a href="#" class="text-[#717182] underline hover:text-neutral-950">
+                            <a href="{{ route('syarat-ketentuan') }}" class="text-[#717182] underline hover:text-neutral-950">
                                 Lihat S&K
                             </a>
                         </p>
