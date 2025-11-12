@@ -25,6 +25,6 @@ class ItemController extends Controller
             ['id' => 5, 'judul' => 'Kamera Digital Canon EOS 700D', 'kategori' => 'Elektronik', 'status' => 'Tersedia'],
         ];
 
-        return view('inventory', compact('items'));
+        return view('kelola-barang', compact('items'));
     }
 }
