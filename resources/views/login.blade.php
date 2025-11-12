@@ -39,7 +39,28 @@
             </div>
 
             <!-- Login Form -->
-            <form id="loginForm" class="space-y-6" onsubmit="handleSubmit(event)">
+            <form
+                id="loginForm"
+                class="space-y-6"
+                action="{{ route('login.authenticate') }}"
+                method="POST"
+            >
+                @csrf
+                @if (session('status'))
+                    <div class="p-4 border border-[#009689]/30 bg-teal-50 text-sm text-neutral-950 rounded-lg">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="p-4 border border-[#d4183d]/30 bg-red-50 text-sm text-[#d4183d] rounded-lg">
+                        <p class="font-medium mb-2">Terjadi kesalahan:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <!-- Email Field -->
                 <div class="space-y-2">
                     <label for="email" class="block text-sm text-neutral-950">
@@ -51,15 +72,18 @@
                         type="email"
                         name="email"
                         placeholder="organisasi@email.com"
-                        class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                        value="{{ old('email') }}"
+                        class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('email') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                     />
-                    <p id="error-email" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <circle cx="12" cy="12" r="10" stroke-width="2" />
-                            <path d="M12 8v4M12 16h.01" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                        <span></span>
-                    </p>
+                    @error('email')
+                        <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10" stroke-width="2" />
+                                <path d="M12 8v4M12 16h.01" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Password Field -->
@@ -79,7 +103,7 @@
                             type="password"
                             name="password"
                             placeholder="Masukkan password organisasi"
-                            class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                            class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('password') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
                         <button
                             type="button"
@@ -106,13 +130,15 @@
                             </svg>
                         </button>
                     </div>
-                    <p id="error-password" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <circle cx="12" cy="12" r="10" stroke-width="2" />
-                            <path d="M12 8v4M12 16h.01" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                        <span></span>
-                    </p>
+                    @error('password')
+                        <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10" stroke-width="2" />
+                                <path d="M12 8v4M12 16h.01" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Remember Me Checkbox -->
@@ -124,6 +150,7 @@
                             name="rememberMe"
                             class="w-4 h-4 rounded bg-[#f3f3f5] border border-neutral-200 checked:bg-[#009689] checked:border-[#009689] focus:ring-2 focus:ring-[#009689] focus:ring-offset-0 cursor-pointer appearance-none"
                             onchange="updateCheckboxIcon(this)"
+                            {{ old('rememberMe') ? 'checked' : '' }}
                         />
                         <svg id="checkbox-check-icon" class="w-4 h-4 text-white absolute inset-0 pointer-events-none hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -213,155 +240,63 @@
     </footer>
 
     <script>
-        // Password visibility toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const rememberCheckbox = document.getElementById('rememberMe');
+            if (rememberCheckbox) {
+                updateCheckboxIcon(rememberCheckbox);
+            }
+
+            const form = document.getElementById('loginForm');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    const submitBtn = document.getElementById('submitBtn');
+                    const submitText = document.getElementById('submitText');
+                    const submitLoader = document.getElementById('submitLoader');
+
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                    }
+                    if (submitText) {
+                        submitText.textContent = 'Memproses...';
+                    }
+                    if (submitLoader) {
+                        submitLoader.classList.remove('hidden');
+                    }
+                });
+            }
+        });
+
         function togglePassword() {
             const field = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-password');
             const eyeSlash = document.getElementById('eye-slash-password');
-            
-            if (field.type === 'password') {
-                field.type = 'text';
-                if (eyeSlash) eyeSlash.style.display = 'none';
-                eyeIcon.setAttribute('aria-label', 'Sembunyikan password');
-            } else {
-                field.type = 'password';
-                if (eyeSlash) eyeSlash.style.display = 'block';
-                eyeIcon.setAttribute('aria-label', 'Tampilkan password');
+
+            if (!field) {
+                return;
+            }
+
+            const isPassword = field.type === 'password';
+            field.type = isPassword ? 'text' : 'password';
+
+            if (eyeSlash) {
+                eyeSlash.style.display = isPassword ? 'none' : 'block';
+            }
+
+            if (eyeIcon) {
+                eyeIcon.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
             }
         }
 
-        // Checkbox icon update
         function updateCheckboxIcon(checkbox) {
             const checkIcon = document.getElementById('checkbox-check-icon');
+            if (!checkIcon) return;
+
             if (checkbox.checked) {
                 checkIcon.classList.remove('hidden');
             } else {
                 checkIcon.classList.add('hidden');
             }
         }
-
-        // Error display functions
-        function showError(field, message) {
-            const errorEl = document.getElementById(`error-${field}`);
-            const inputEl = document.getElementById(field);
-            if (errorEl && inputEl) {
-                errorEl.classList.remove('hidden');
-                errorEl.querySelector('span').textContent = message;
-                inputEl.classList.remove('border-neutral-200');
-                inputEl.classList.add('border-[#d4183d]');
-            }
-        }
-
-        function hideError(field) {
-            const errorEl = document.getElementById(`error-${field}`);
-            const inputEl = document.getElementById(field);
-            if (errorEl && inputEl) {
-                errorEl.classList.add('hidden');
-                inputEl.classList.remove('border-[#d4183d]');
-                inputEl.classList.add('border-neutral-200');
-            }
-        }
-
-        // Form validation
-        function validateForm() {
-            let isValid = true;
-            const form = document.getElementById('loginForm');
-            const formData = new FormData(form);
-
-            // Reset all errors
-            ['email', 'password'].forEach(field => {
-                hideError(field);
-            });
-
-            // Validate email
-            const email = formData.get('email');
-            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-            if (!email || email.trim() === '') {
-                showError('email', 'Email wajib diisi');
-                isValid = false;
-            } else if (!emailRegex.test(email)) {
-                showError('email', 'Format email tidak valid');
-                isValid = false;
-            }
-
-            // Validate password
-            const password = formData.get('password');
-            if (!password || password.trim() === '') {
-                showError('password', 'Password wajib diisi');
-                isValid = false;
-            }
-
-            return isValid;
-        }
-
-        // Form submit handler
-        async function handleSubmit(event) {
-            event.preventDefault();
-
-            if (!validateForm()) {
-                return;
-            }
-
-            const submitBtn = document.getElementById('submitBtn');
-            const submitText = document.getElementById('submitText');
-            const submitLoader = document.getElementById('submitLoader');
-            const form = document.getElementById('loginForm');
-            const formData = new FormData(form);
-
-            // Disable submit button
-            submitBtn.disabled = true;
-            submitText.textContent = 'Memproses...';
-            submitLoader.classList.remove('hidden');
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Mock validation - simulate wrong credentials
-            const email = formData.get('email');
-            const password = formData.get('password');
-            const mockValidEmail = 'organisasi@nextuse.id';
-            const mockValidPassword = 'password123';
-
-            if (email !== mockValidEmail || password !== mockValidPassword) {
-                // Show error message
-                alert('Email atau password salah\n\nSilakan periksa kembali kredensial organisasi Anda.');
-                submitBtn.disabled = false;
-                submitText.textContent = 'Masuk';
-                submitLoader.classList.add('hidden');
-                return;
-            }
-
-            // Success
-            alert('Login berhasil!\n\nMengarahkan ke dashboard organisasi...');
-
-            // Simulate redirect to dashboard
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitText.textContent = 'Masuk';
-                submitLoader.classList.add('hidden');
-                // In a real app: window.location.href = '/dashboard-organisasi';
-            }, 1000);
-        }
-
-        // Real-time validation on blur
-        document.getElementById('email').addEventListener('blur', function() {
-            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-            if (!this.value.trim()) {
-                showError('email', 'Email wajib diisi');
-            } else if (!emailRegex.test(this.value)) {
-                showError('email', 'Format email tidak valid');
-            } else {
-                hideError('email');
-            }
-        });
-
-        document.getElementById('password').addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                showError('password', 'Password wajib diisi');
-            } else {
-                hideError('password');
-            }
-        });
     </script>
 </body>
 </html>
