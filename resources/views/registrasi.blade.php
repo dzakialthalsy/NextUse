@@ -32,7 +32,24 @@
                 </div>
 
                 <!-- Form -->
-                <form id="registrationForm" class="space-y-6" onsubmit="handleSubmit(event)">
+            <form
+                id="registrationForm"
+                class="space-y-6"
+                action="{{ route('registrasi.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+                @csrf
+                    @if ($errors->any())
+                        <div class="p-4 border border-[#d4183d]/30 bg-red-50 rounded-lg text-sm text-[#d4183d] leading-relaxed">
+                            <p class="font-medium mb-2">Periksa kembali data yang diisi:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <!-- Nama Organisasi -->
                     <div class="space-y-2">
                         <label for="organizationName" class="block text-sm text-neutral-950">
@@ -44,14 +61,17 @@
                             type="text"
                             name="organizationName"
                             placeholder="Contoh: Yayasan Peduli Sesama"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                        value="{{ old('organizationName') }}"
+                        class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('organizationName') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
-                        <p id="error-organizationName" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
+                    @error('organizationName')
+                        <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span></span>
+                            <span>{{ $message }}</span>
                         </p>
+                    @enderror
                     </div>
 
                     <!-- Jenis Organisasi -->
@@ -63,23 +83,25 @@
                         <select
                             id="organizationType"
                             name="organizationType"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent text-[#717182]"
+                        class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm border {{ $errors->has('organizationType') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent {{ old('organizationType') ? 'text-neutral-950' : 'text-[#717182]' }}"
                         >
-                            <option value="">Pilih jenis organisasi</option>
-                            <option value="yayasan">Yayasan</option>
-                            <option value="kampus">Kampus</option>
-                            <option value="sekolah">Sekolah</option>
-                            <option value="pemerintah">Pemerintah</option>
-                            <option value="komunitas">Komunitas</option>
-                            <option value="perusahaan-sosial">Perusahaan Sosial</option>
-                            <option value="lainnya">Lainnya</option>
+                        <option value="">Pilih jenis organisasi</option>
+                        <option value="yayasan" {{ old('organizationType') === 'yayasan' ? 'selected' : '' }}>Yayasan</option>
+                        <option value="kampus" {{ old('organizationType') === 'kampus' ? 'selected' : '' }}>Kampus</option>
+                        <option value="sekolah" {{ old('organizationType') === 'sekolah' ? 'selected' : '' }}>Sekolah</option>
+                        <option value="pemerintah" {{ old('organizationType') === 'pemerintah' ? 'selected' : '' }}>Pemerintah</option>
+                        <option value="komunitas" {{ old('organizationType') === 'komunitas' ? 'selected' : '' }}>Komunitas</option>
+                        <option value="perusahaan-sosial" {{ old('organizationType') === 'perusahaan-sosial' ? 'selected' : '' }}>Perusahaan Sosial</option>
+                        <option value="lainnya" {{ old('organizationType') === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
                         </select>
-                        <p id="error-organizationType" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
+                    @error('organizationType')
+                        <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span></span>
+                            <span>{{ $message }}</span>
                         </p>
+                    @enderror
                     </div>
 
                     <!-- Nomor Induk Organisasi -->
@@ -93,7 +115,8 @@
                             type="text"
                             name="organizationId"
                             placeholder="Contoh: 1234567890123456"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                    value="{{ old('organizationId') }}"
+                    class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
                     </div>
 
@@ -108,15 +131,18 @@
                             type="email"
                             name="email"
                             placeholder="contoh@organisasi.com"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                    value="{{ old('email') }}"
+                    class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('email') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
-                        <p id="error-email" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
-                        <p id="hint-email" class="text-sm text-[#717182]">Pastikan email unik dan valid</p>
+                @error('email')
+                    <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ $message }}</span>
+                    </p>
+                @enderror
+                <p class="text-sm {{ $errors->has('email') ? 'hidden' : 'text-[#717182]' }}">Pastikan email unik dan valid</p>
                     </div>
 
                     <!-- Nomor Telepon -->
@@ -130,14 +156,17 @@
                             type="tel"
                             name="phone"
                             placeholder="08xx-xxxx-xxxx"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                    value="{{ old('phone') }}"
+                    class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('phone') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
-                        <p id="error-phone" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
+                @error('phone')
+                    <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ $message }}</span>
+                    </p>
+                @enderror
                     </div>
 
                     <!-- Nama Penanggung Jawab -->
@@ -151,14 +180,17 @@
                             type="text"
                             name="contactPerson"
                             placeholder="Contoh: Budi Santoso"
-                            class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                    value="{{ old('contactPerson') }}"
+                    class="w-full h-9 px-3 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('contactPerson') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                         />
-                        <p id="error-contactPerson" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
+                @error('contactPerson')
+                    <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ $message }}</span>
+                    </p>
+                @enderror
                     </div>
 
                     <!-- Password -->
@@ -173,7 +205,7 @@
                                 type="password"
                                 name="password"
                                 placeholder="Buat password yang kuat"
-                                class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                                class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('password') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                             />
                             <button
                                 type="button"
@@ -207,13 +239,15 @@
                                 <span id="password-strength-label" class="text-xs text-[#717182]"></span>
                             </div>
                         </div>
-                        <p id="error-password" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
-                        <p id="hint-password" class="text-sm text-[#717182]">Minimal 8 karakter dengan kombinasi huruf, angka, dan simbol</p>
+                        @error('password')
+                            <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
+                        <p id="hint-password" class="text-sm text-[#717182] {{ $errors->has('password') ? 'hidden' : '' }}">Minimal 8 karakter dengan kombinasi huruf, angka, dan simbol</p>
                     </div>
 
                     <!-- Konfirmasi Password -->
@@ -228,7 +262,7 @@
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Ulangi password Anda"
-                                class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border border-neutral-200 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
+                                class="w-full h-9 px-3 pr-10 py-1 bg-[#f3f3f5] rounded-[10px] text-sm placeholder:text-[#717182] border {{ $errors->has('confirmPassword') ? 'border-[#d4183d]' : 'border-neutral-200' }} shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-[#009689] focus:border-transparent"
                             />
                             <button
                                 type="button"
@@ -254,12 +288,14 @@
                                 </svg>
                             </button>
                         </div>
-                        <p id="error-confirmPassword" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
+                        @error('confirmPassword')
+                            <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
                     </div>
 
                     <!-- Upload Document -->
@@ -268,14 +304,13 @@
                             Upload Surat Penugasan/Surat Kuasa
                             <span class="text-[#d4183d] ml-1">*</span>
                         </label>
-                        <div id="document-upload-area" class="border-2 border-dashed border-[#009689] rounded-[10px] p-6 transition-colors bg-teal-50 hover:border-teal-600">
+                        <div id="document-upload-area" class="border-2 border-dashed {{ $errors->has('document') ? 'border-[#d4183d] bg-red-50' : 'border-[#009689] bg-teal-50' }} rounded-[10px] p-6 transition-colors hover:border-teal-600">
                             <input
                                 id="document"
                                 type="file"
                                 name="document"
                                 accept=".pdf,.jpg,.jpeg,.png"
                                 class="hidden"
-                                onchange="handleFileChange(event)"
                             />
                             <label
                                 for="document"
@@ -296,12 +331,14 @@
                                 </div>
                             </label>
                         </div>
-                        <p id="error-document" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
+                        @error('document')
+                            <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
                     </div>
 
                     <!-- Agreement Checkbox -->
@@ -312,7 +349,8 @@
                                     id="agreement"
                                     type="checkbox"
                                     name="agreement"
-                                    class="w-4 h-4 rounded bg-[#f3f3f5] border border-neutral-200 checked:bg-[#009689] checked:border-[#009689] focus:ring-2 focus:ring-[#009689] focus:ring-offset-0 cursor-pointer"
+                                    class="w-4 h-4 rounded bg-[#f3f3f5] border {{ $errors->has('agreement') ? 'border-[#d4183d]' : 'border-neutral-200' }} checked:bg-[#009689] checked:border-[#009689] focus:ring-2 focus:ring-[#009689] focus:ring-offset-0 cursor-pointer"
+                                    {{ old('agreement') ? 'checked' : '' }}
                                 />
                             </div>
                             <label
@@ -327,12 +365,14 @@
                                 <span class="text-[#d4183d] ml-1">*</span>
                             </label>
                         </div>
-                        <p id="error-agreement" class="text-sm text-[#d4183d] hidden flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span></span>
-                        </p>
+                        @error('agreement')
+                            <p class="text-sm text-[#d4183d] flex items-center gap-1.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ $message }}</span>
+                            </p>
+                        @enderror
                     </div>
 
                     <!-- Submit Button -->
@@ -475,22 +515,72 @@
     </footer>
 
     <script>
-        // Password visibility toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('password');
+            const strengthContainer = document.getElementById('password-strength');
+            const strengthBar = document.getElementById('password-strength-bar');
+            const strengthLabel = document.getElementById('password-strength-label');
+
+            if (passwordInput && strengthContainer && strengthBar && strengthLabel) {
+                const updateStrength = (value) => {
+                    const strength = calculatePasswordStrength(value);
+                    if (value && strength > 0) {
+                        strengthContainer.classList.remove('hidden');
+                        strengthBar.style.width = `${strength}%`;
+                        strengthBar.style.backgroundColor = getPasswordStrengthColor(strength);
+                        strengthLabel.textContent = getPasswordStrengthLabel(strength);
+                    } else {
+                        strengthContainer.classList.add('hidden');
+                    }
+                };
+
+                passwordInput.addEventListener('input', (event) => {
+                    updateStrength(event.target.value);
+                });
+
+                if (passwordInput.value) {
+                    updateStrength(passwordInput.value);
+                }
+            }
+
+            const documentInput = document.getElementById('document');
+            if (documentInput) {
+                documentInput.addEventListener('change', handleFileChange);
+            }
+
+            const form = document.getElementById('registrationForm');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    const submitBtn = document.getElementById('submitBtn');
+                    const submitText = document.getElementById('submitText');
+                    const submitLoader = document.getElementById('submitLoader');
+
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                    }
+                    if (submitText) {
+                        submitText.textContent = 'Mendaftarkan...';
+                    }
+                    if (submitLoader) {
+                        submitLoader.classList.remove('hidden');
+                    }
+                });
+            }
+        });
+
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
-            const eyeIcon = document.getElementById(`eye-${fieldId}`);
+            if (!field) return;
+
             const eyeSlash = document.getElementById(`eye-slash-${fieldId}`);
-            
-            if (field.type === 'password') {
-                field.type = 'text';
-                if (eyeSlash) eyeSlash.style.display = 'none';
-            } else {
-                field.type = 'password';
-                if (eyeSlash) eyeSlash.style.display = 'block';
+            const isPassword = field.type === 'password';
+            field.type = isPassword ? 'text' : 'password';
+
+            if (eyeSlash) {
+                eyeSlash.style.display = isPassword ? 'none' : 'block';
             }
         }
 
-        // Password strength calculator
         function calculatePasswordStrength(pass) {
             if (!pass) return 0;
             let strength = 0;
@@ -515,317 +605,47 @@
             return '#009689';
         }
 
-        // Password strength indicator
-        document.getElementById('password').addEventListener('input', function(e) {
-            const password = e.target.value;
-            const strength = calculatePasswordStrength(password);
-            const strengthDiv = document.getElementById('password-strength');
-            const strengthBar = document.getElementById('password-strength-bar');
-            const strengthLabel = document.getElementById('password-strength-label');
-
-            if (password && strength > 0) {
-                strengthDiv.classList.remove('hidden');
-                strengthBar.style.width = strength + '%';
-                strengthBar.style.backgroundColor = getPasswordStrengthColor(strength);
-                strengthLabel.textContent = getPasswordStrengthLabel(strength);
-            } else {
-                strengthDiv.classList.add('hidden');
-            }
-        });
-
-        // File upload handler
-        function handleFileChange(e) {
-            const file = e.target.files?.[0];
+        function handleFileChange(event) {
+            const file = event.target.files?.[0];
             const fileNameEl = document.getElementById('document-file-name');
             const uploadArea = document.getElementById('document-upload-area');
-            const errorEl = document.getElementById('error-document');
 
-            if (file) {
-                const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-                const maxSize = 5 * 1024 * 1024; // 5MB
+            if (!fileNameEl || !uploadArea) {
+                return;
+            }
 
-                if (!validTypes.includes(file.type)) {
-                    showError('document', 'Format file tidak valid. Gunakan PDF, JPG, atau PNG.');
-                    e.target.value = '';
-                    fileNameEl.textContent = 'Klik untuk pilih file';
-                    uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
-                    uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
-                    return;
-                }
-
-                if (file.size > maxSize) {
-                    showError('document', 'Ukuran file maksimal 5MB.');
-                    e.target.value = '';
-                    fileNameEl.textContent = 'Klik untuk pilih file';
-                    uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
-                    uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
-                    return;
-                }
-
-                fileNameEl.textContent = file.name;
-                hideError('document');
+            if (!file) {
+                fileNameEl.textContent = 'Klik untuk pilih file';
                 uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
                 uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
-            }
-        }
-
-        // Error display functions
-        function showError(field, message) {
-            const errorEl = document.getElementById(`error-${field}`);
-            const inputEl = document.getElementById(field);
-            if (errorEl && inputEl) {
-                errorEl.classList.remove('hidden');
-                errorEl.querySelector('span').textContent = message;
-                inputEl.classList.remove('border-neutral-200');
-                inputEl.classList.add('border-[#d4183d]');
-            }
-        }
-
-        function hideError(field) {
-            const errorEl = document.getElementById(`error-${field}`);
-            const inputEl = document.getElementById(field);
-            if (errorEl && inputEl) {
-                errorEl.classList.add('hidden');
-                inputEl.classList.remove('border-[#d4183d]');
-                inputEl.classList.add('border-neutral-200');
-            }
-        }
-
-        // Form validation
-        function validateForm() {
-            let isValid = true;
-            const form = document.getElementById('registrationForm');
-            const formData = new FormData(form);
-
-            // Reset all errors
-            ['organizationName', 'organizationType', 'email', 'phone', 'contactPerson', 'password', 'confirmPassword', 'document', 'agreement'].forEach(field => {
-                hideError(field);
-            });
-
-            // Validate organization name
-            const orgName = formData.get('organizationName');
-            if (!orgName || orgName.trim() === '') {
-                showError('organizationName', 'Nama organisasi wajib diisi');
-                isValid = false;
-            }
-
-            // Validate organization type
-            const orgType = formData.get('organizationType');
-            if (!orgType || orgType === '') {
-                showError('organizationType', 'Jenis organisasi wajib dipilih');
-                isValid = false;
-            } else {
-                // Update select text color
-                document.getElementById('organizationType').classList.remove('text-[#717182]');
-                document.getElementById('organizationType').classList.add('text-neutral-950');
-            }
-
-            // Validate email
-            const email = formData.get('email');
-            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-            if (!email || email.trim() === '') {
-                showError('email', 'Email wajib diisi');
-                isValid = false;
-            } else if (!emailRegex.test(email)) {
-                showError('email', 'Format email tidak valid');
-                isValid = false;
-            }
-
-            // Validate phone
-            const phone = formData.get('phone');
-            const phoneRegex = /^[0-9+\-\s()]{10,}$/;
-            if (!phone || phone.trim() === '') {
-                showError('phone', 'Nomor telepon wajib diisi');
-                isValid = false;
-            } else if (!phoneRegex.test(phone)) {
-                showError('phone', 'Nomor telepon tidak valid');
-                isValid = false;
-            }
-
-            // Validate contact person
-            const contactPerson = formData.get('contactPerson');
-            if (!contactPerson || contactPerson.trim() === '') {
-                showError('contactPerson', 'Nama penanggung jawab wajib diisi');
-                isValid = false;
-            }
-
-            // Validate password
-            const password = formData.get('password');
-            if (!password || password.trim() === '') {
-                showError('password', 'Password wajib diisi');
-                isValid = false;
-            } else if (password.length < 8) {
-                showError('password', 'Password minimal 8 karakter');
-                isValid = false;
-            }
-
-            // Validate confirm password
-            const confirmPassword = formData.get('confirmPassword');
-            if (!confirmPassword || confirmPassword.trim() === '') {
-                showError('confirmPassword', 'Konfirmasi password wajib diisi');
-                isValid = false;
-            } else if (password && confirmPassword !== password) {
-                showError('confirmPassword', 'Password tidak cocok');
-                isValid = false;
-            }
-
-            // Validate document
-            const document = formData.get('document');
-            if (!document || document.size === 0) {
-                showError('document', 'Dokumen wajib diunggah');
-                const uploadArea = document.getElementById('document-upload-area');
-                uploadArea.classList.remove('border-[#009689]', 'bg-teal-50');
-                uploadArea.classList.add('border-[#d4183d]', 'bg-red-50');
-                isValid = false;
-            }
-
-            // Validate agreement
-            const agreement = formData.get('agreement');
-            if (!agreement) {
-                showError('agreement', 'Anda harus menyetujui syarat dan ketentuan');
-                isValid = false;
-            }
-
-            return isValid;
-        }
-
-        // Form submit handler
-        async function handleSubmit(event) {
-            event.preventDefault();
-
-            if (!validateForm()) {
                 return;
             }
 
-            const submitBtn = document.getElementById('submitBtn');
-            const submitText = document.getElementById('submitText');
-            const submitLoader = document.getElementById('submitLoader');
-            const form = document.getElementById('registrationForm');
-            const formData = new FormData(form);
+            const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            const maxSize = 5 * 1024 * 1024;
 
-            // Disable submit button
-            submitBtn.disabled = true;
-            submitText.textContent = 'Mendaftarkan...';
-            submitLoader.classList.remove('hidden');
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Mock validation for unique email
-            const email = formData.get('email');
-            const mockExistingEmails = ['test@example.com', 'org@sample.com'];
-            if (mockExistingEmails.includes(email.toLowerCase())) {
-                showError('email', 'Email sudah terdaftar. Gunakan email lain.');
-                submitBtn.disabled = false;
-                submitText.textContent = 'Daftarkan Organisasi';
-                submitLoader.classList.add('hidden');
+            if (!validTypes.includes(file.type)) {
+                alert('Format file tidak valid. Gunakan PDF, JPG, atau PNG.');
+                event.target.value = '';
+                fileNameEl.textContent = 'Klik untuk pilih file';
+                uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
+                uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
                 return;
             }
 
-            // Success - show alert (you can replace this with a toast library)
-            alert('Pendaftaran berhasil, silakan cek email resmi organisasi untuk verifikasi');
+            if (file.size > maxSize) {
+                alert('Ukuran file maksimal 5MB.');
+                event.target.value = '';
+                fileNameEl.textContent = 'Klik untuk pilih file';
+                uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
+                uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
+                return;
+            }
 
-            // Reset form
-            form.reset();
-            document.getElementById('document-file-name').textContent = 'Klik untuk pilih file';
-            document.getElementById('password-strength').classList.add('hidden');
-            document.getElementById('organizationType').classList.remove('text-neutral-950');
-            document.getElementById('organizationType').classList.add('text-[#717182]');
-            const uploadArea = document.getElementById('document-upload-area');
+            fileNameEl.textContent = file.name;
             uploadArea.classList.remove('border-[#d4183d]', 'bg-red-50');
             uploadArea.classList.add('border-[#009689]', 'bg-teal-50');
-
-            // Re-enable submit button
-            submitBtn.disabled = false;
-            submitText.textContent = 'Daftarkan Organisasi';
-            submitLoader.classList.add('hidden');
         }
-
-        // Real-time validation on blur
-        document.getElementById('organizationName').addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                showError('organizationName', 'Nama organisasi wajib diisi');
-            } else {
-                hideError('organizationName');
-            }
-        });
-
-        document.getElementById('organizationType').addEventListener('change', function() {
-            if (!this.value) {
-                showError('organizationType', 'Jenis organisasi wajib dipilih');
-                this.classList.remove('text-neutral-950');
-                this.classList.add('text-[#717182]');
-            } else {
-                hideError('organizationType');
-                this.classList.remove('text-[#717182]');
-                this.classList.add('text-neutral-950');
-            }
-        });
-
-        document.getElementById('email').addEventListener('blur', function() {
-            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-            if (!this.value.trim()) {
-                showError('email', 'Email wajib diisi');
-                document.getElementById('hint-email').classList.add('hidden');
-            } else if (!emailRegex.test(this.value)) {
-                showError('email', 'Format email tidak valid');
-                document.getElementById('hint-email').classList.add('hidden');
-            } else {
-                hideError('email');
-                document.getElementById('hint-email').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('phone').addEventListener('blur', function() {
-            const phoneRegex = /^[0-9+\-\s()]{10,}$/;
-            if (!this.value.trim()) {
-                showError('phone', 'Nomor telepon wajib diisi');
-            } else if (!phoneRegex.test(this.value)) {
-                showError('phone', 'Nomor telepon tidak valid');
-            } else {
-                hideError('phone');
-            }
-        });
-
-        document.getElementById('contactPerson').addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                showError('contactPerson', 'Nama penanggung jawab wajib diisi');
-            } else {
-                hideError('contactPerson');
-            }
-        });
-
-        document.getElementById('password').addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                showError('password', 'Password wajib diisi');
-                document.getElementById('hint-password').classList.add('hidden');
-            } else if (this.value.length < 8) {
-                showError('password', 'Password minimal 8 karakter');
-                document.getElementById('hint-password').classList.add('hidden');
-            } else {
-                hideError('password');
-                document.getElementById('hint-password').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('confirmPassword').addEventListener('blur', function() {
-            const password = document.getElementById('password').value;
-            if (!this.value.trim()) {
-                showError('confirmPassword', 'Konfirmasi password wajib diisi');
-            } else if (this.value !== password) {
-                showError('confirmPassword', 'Password tidak cocok');
-            } else {
-                hideError('confirmPassword');
-            }
-        });
-
-        document.getElementById('agreement').addEventListener('change', function() {
-            if (!this.checked) {
-                showError('agreement', 'Anda harus menyetujui syarat dan ketentuan');
-            } else {
-                hideError('agreement');
-            }
-        });
     </script>
 </body>
 </html>
