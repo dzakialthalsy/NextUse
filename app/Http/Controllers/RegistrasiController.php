@@ -54,8 +54,79 @@ class RegistrasiController extends Controller
         $documentPath = null;
 
         try {
+            // Karena document required, pastikan file ada dan valid
             if ($request->hasFile('document')) {
-                $documentPath = $request->file('document')->store('organization-documents', 'public');
+                $file = $request->file('document');
+                
+                // Pastikan file valid dan tidak ada error saat upload
+                if (!$file->isValid()) {
+                    $errorMessage = 'File dokumen tidak valid atau rusak.';
+                    $errorCode = $file->getError();
+                    
+                    // Berikan pesan error yang lebih spesifik berdasarkan error code
+                    if ($errorCode === UPLOAD_ERR_INI_SIZE || $errorCode === UPLOAD_ERR_FORM_SIZE) {
+                        $errorMessage = 'Ukuran file terlalu besar. Maksimal 5MB.';
+                    } elseif ($errorCode === UPLOAD_ERR_PARTIAL) {
+                        $errorMessage = 'File hanya terunggah sebagian. Silakan coba lagi.';
+                    } elseif ($errorCode === UPLOAD_ERR_NO_FILE) {
+                        $errorMessage = 'Tidak ada file yang diunggah.';
+                    } elseif ($errorCode === UPLOAD_ERR_NO_TMP_DIR) {
+                        $errorMessage = 'Folder temporary tidak ditemukan. Hubungi administrator.';
+                    } elseif ($errorCode === UPLOAD_ERR_CANT_WRITE) {
+                        $errorMessage = 'Gagal menulis file ke disk. Hubungi administrator.';
+                    } elseif ($errorCode === UPLOAD_ERR_EXTENSION) {
+                        $errorMessage = 'Upload dihentikan oleh ekstensi PHP.';
+                    }
+                    
+                    return back()
+                        ->withErrors(['document' => $errorMessage])
+                        ->withInput();
+                }
+                
+                // Pastikan file tidak kosong
+                $fileSize = $file->getSize();
+                if ($fileSize === false || $fileSize <= 0) {
+                    return back()
+                        ->withErrors(['document' => 'File dokumen tidak boleh kosong.'])
+                        ->withInput();
+                }
+                
+                // Pastikan file memiliki nama yang valid
+                $originalName = $file->getClientOriginalName();
+                if (empty($originalName)) {
+                    return back()
+                        ->withErrors(['document' => 'File dokumen harus memiliki nama yang valid.'])
+                        ->withInput();
+                }
+                
+                // Pastikan file memiliki path temporary yang valid
+                $realPath = $file->getRealPath();
+                if (empty($realPath) || !file_exists($realPath)) {
+                    return back()
+                        ->withErrors(['document' => 'File dokumen tidak dapat diakses. Silakan coba lagi.'])
+                        ->withInput();
+                }
+                
+                // Pastikan direktori storage ada
+                $storagePath = storage_path('app/public/organization-documents');
+                if (!is_dir($storagePath)) {
+                    Storage::disk('public')->makeDirectory('organization-documents');
+                }
+                
+                // Simpan file
+                $documentPath = $file->store('organization-documents', 'public');
+                
+                // Pastikan file berhasil disimpan
+                if (empty($documentPath) || !Storage::disk('public')->exists($documentPath)) {
+                    return back()
+                        ->withErrors(['document' => 'Gagal menyimpan file dokumen. Silakan coba lagi.'])
+                        ->withInput();
+                }
+            } else {
+                // Jika document required tapi tidak ada file, kembalikan error
+                return back()
+                    ->withErrors(['document' => 'File dokumen wajib diunggah.'])
+                    ->withInput();
             }
 
             Organization::create([
