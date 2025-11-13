@@ -8,15 +8,20 @@
             </a>
             
             <nav class="hidden md:flex space-x-6 text-sm font-normal">
-                <a href="#" class="text-gray-900 transition duration-150 border-b-2 border-teal-500 font-medium">Browse</a>
+                @php
+                    $isInventoryPage = request()->routeIs('inventory.index');
+                @endphp
+                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
                 <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Post Item</a>
                 <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Messages</a>
-                <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Profile</a>
+                <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Profile</a>
             </nav>
 
             <div class="flex items-center space-x-3">
                 <button class="relative p-2 rounded-lg hover:bg-gray-100 transition duration-150">
-                    <svg class="w-5 h-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v2.25m-1.5-7.5l-2.25 2.25l-2.25-2.25m4.5 0V7.5M19.5 7.5a4.5 4.5 0 00-9 0v6.75a4.5 4.5 0 009 0v-6.75zm0 0H4.5M4.5 7.5a4.5 4.5 0 019 0v6.75a4.5 4.5 0 01-9 0v-6.75z" /></svg>
+                    <svg class="w-5 h-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                    </svg>
                     <span class="absolute top-1 right-1 block w-2 h-2 bg-red-600 rounded-full"></span>
                 </button>
                 <div class="w-8 h-8 rounded-full main-gradient flex items-center justify-center">
