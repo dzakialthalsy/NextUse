@@ -58,11 +58,11 @@ class Organization extends Model
             return;
         }
 
-        // Avoid double hashing when the value is already hashed.
-        $needsRehash = password_get_info($value)['algo'] === 0;
+        // Check if the value is already a bcrypt hash (starts with $2y$ and is 60 chars)
+        $isAlreadyHashed = strlen($value) === 60 && str_starts_with($value, '$2y$');
 
-        $this->attributes['password'] = $needsRehash
-            ? Hash::make($value)
-            : $value;
+        $this->attributes['password'] = $isAlreadyHashed
+            ? $value
+            : Hash::make($value);
     }
 }
