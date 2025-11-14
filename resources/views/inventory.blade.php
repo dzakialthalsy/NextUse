@@ -168,13 +168,13 @@
                 <p class="text-gray-500 mt-2 text-base">Kelola semua barang yang Anda posting.</p>
             </div>
             
-            <button class="flex items-center space-x-2 px-4 py-2 bg-[#10b981] hover:bg-green-700 text-white rounded-lg font-medium transition-colors shadow-md text-sm">
+            <a href="{{ route('post-item.create') }}" class="flex items-center space-x-2 px-4 py-2 bg-[#10b981] hover:bg-green-700 text-white rounded-lg font-medium transition-colors shadow-md text-sm">
                 {{-- Plus Icon --}}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <span>Posting Barang Baru</span>
-            </button>
+            </a>
         </div>
 
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SyaratKetentuanController;
 use App\Http\Controllers\ReportUserController;
 use App\Http\Controllers\ReportItemController;
+use App\Http\Controllers\PostItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -33,3 +34,7 @@ Route::post('/report-user', [ReportUserController::class, 'store'])->name('repor
 
 Route::get('/report-item', [ReportItemController::class, 'create'])->name('report-item.create');
 Route::post('/report-item', [ReportItemController::class, 'store'])->name('report-item.store');
+
+Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
+Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');
+Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->name('post-item.save-draft');
