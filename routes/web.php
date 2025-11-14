@@ -7,7 +7,7 @@ use App\Http\Controllers\SyaratKetentuanController;
 
 Route::get('/', function () {
     return view('beranda');
-});
+})->name('home');
 
 Route::get('/registrasi', [RegistrasiController::class, 'index'])->name('registrasi');
 Route::get('/login', [LoginController::class, 'index'])->name('login');
