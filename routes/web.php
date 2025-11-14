@@ -14,8 +14,8 @@ Route::get('/', [SearchController::class, 'index'])->name('beranda');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/filter', [FilterController::class, 'index'])->name('filter');
 
-Route::get('/', function () {
-    return view('beranda');
+Route::get('/home', function () {
+    return redirect()->route('beranda');
 })->name('home');
 
 Route::get('/registrasi', [RegistrasiController::class, 'index'])->name('registrasi');
