@@ -10,9 +10,10 @@
             <nav class="hidden md:flex space-x-6 text-sm font-normal">
                 @php
                     $isInventoryPage = request()->routeIs('inventory.index');
+                    $isPostItemPage = request()->routeIs('post-item.create');
                 @endphp
-                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
-                <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Post Item</a>
+                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
+                <a href="{{ route('post-item.create') }}" class="{{ $isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Post Item</a>
                 <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Messages</a>
                 <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Profile</a>
             </nav>
