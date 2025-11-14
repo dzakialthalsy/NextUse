@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,9 +67,15 @@ class PostItemController extends Controller
             }
         }
 
+        // Get organization ID from session
+        $organizationId = $request->session()->get('organization_id');
+        if (!$organizationId) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
         // Simpan item
         $item = Item::create([
-            'user_id' => Auth::id(),
+            'organization_id' => $organizationId,
             'judul' => $request->judul,
             'kategori' => $request->kategori,
             'kondisi' => $request->kondisi,
@@ -121,9 +126,15 @@ class PostItemController extends Controller
             }
         }
 
+        // Get organization ID from session
+        $organizationId = $request->session()->get('organization_id');
+        if (!$organizationId) {
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu.'], 401);
+        }
+
         // Simpan draft
         $item = Item::create([
-            'user_id' => Auth::id(),
+            'organization_id' => $organizationId,
             'judul' => $request->judul ?? '',
             'kategori' => $request->kategori ?? 'Lainnya',
             'kondisi' => $request->kondisi ?? 'bekas',

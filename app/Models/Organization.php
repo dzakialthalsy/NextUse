@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
 
 class Organization extends Model
@@ -64,5 +65,21 @@ class Organization extends Model
         $this->attributes['password'] = $isAlreadyHashed
             ? $value
             : Hash::make($value);
+    }
+
+    /**
+     * Get the reviews given by this organization.
+     */
+    public function reviewsGiven(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    /**
+     * Get the reviews received by this organization.
+     */
+    public function reviewsReceived(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewed_organization_id');
     }
 }

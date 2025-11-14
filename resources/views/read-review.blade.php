@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review & Rating - {{ $user->name }} - NextUse</title>
+    <title>Review & Rating - {{ $organization->organization_name }} - NextUse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @layer utilities {
@@ -32,7 +32,7 @@
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-3xl font-semibold mb-2 text-gray-900">Review & Rating</h1>
-                <p class="text-gray-600">Ulasan dan penilaian untuk {{ $user->name }}</p>
+                <p class="text-gray-600">Ulasan dan penilaian untuk {{ $organization->organization_name }}</p>
             </div>
 
             <!-- Success Message -->
@@ -49,16 +49,16 @@
                 </div>
             @endif
 
-            <!-- User Profile Card -->
+            <!-- Organization Profile Card -->
             <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
                 <div class="flex items-center space-x-4 mb-4">
                     <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
                         <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <h2 class="text-xl font-semibold text-gray-900">{{ $user->name }}</h2>
+                        <h2 class="text-xl font-semibold text-gray-900">{{ $organization->organization_name }}</h2>
                         <div class="flex items-center space-x-4 mt-1">
                             <span class="text-sm text-gray-600">{{ $transactionCount }} transaksi</span>
                             <div class="flex items-center space-x-1">
@@ -70,8 +70,11 @@
                             </div>
                         </div>
                     </div>
-                    @if(auth()->check() && auth()->id() != $user->id)
-                        <a href="{{ route('review.create', ['user_id' => $user->id]) }}" class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg">
+                    @php
+                        $currentOrganizationId = session('organization_id');
+                    @endphp
+                    @if($currentOrganizationId && $currentOrganizationId != $organization->id)
+                        <a href="{{ route('review.create', ['organization_id' => $organization->id]) }}" class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg">
                             Beri Review
                         </a>
                     @endif
@@ -109,7 +112,7 @@
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                                         @if($review->show_name && $review->reviewer)
-                                            <span class="text-gray-600 font-medium text-sm">{{ substr($review->reviewer->name, 0, 1) }}</span>
+                                            <span class="text-gray-600 font-medium text-sm">{{ substr($review->reviewer->organization_name, 0, 1) }}</span>
                                         @else
                                             <span class="text-gray-600 font-medium text-sm">A</span>
                                         @endif
@@ -117,7 +120,7 @@
                                     <div>
                                         <h3 class="font-medium text-gray-900">
                                             @if($review->show_name && $review->reviewer)
-                                                {{ $review->reviewer->name }}
+                                                {{ $review->reviewer->organization_name }}
                                             @else
                                                 Anonim
                                             @endif
@@ -170,9 +173,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                         </svg>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Review</h3>
-                        <p class="text-gray-600 mb-4">Pengguna ini belum memiliki review.</p>
-                        @if(auth()->check() && auth()->id() != $user->id)
-                            <a href="{{ route('review.create', ['user_id' => $user->id]) }}" class="inline-flex items-center bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg">
+                        <p class="text-gray-600 mb-4">Organisasi ini belum memiliki review.</p>
+                        @php
+                            $currentOrganizationId = session('organization_id');
+                        @endphp
+                        @if($currentOrganizationId && $currentOrganizationId != $organization->id)
+                            <a href="{{ route('review.create', ['organization_id' => $organization->id]) }}" class="inline-flex items-center bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg">
                                 Beri Review Pertama
                             </a>
                         @endif

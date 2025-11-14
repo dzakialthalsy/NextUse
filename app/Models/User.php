@@ -6,7 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -45,21 +44,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Get the reviews given by this user.
-     */
-    public function reviewsGiven(): HasMany
-    {
-        return $this->hasMany(Review::class, 'reviewer_id');
-    }
-
-    /**
-     * Get the reviews received by this user.
-     */
-    public function reviewsReceived(): HasMany
-    {
-        return $this->hasMany(Review::class, 'reviewed_user_id');
     }
 }

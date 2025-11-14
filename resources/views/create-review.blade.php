@@ -62,16 +62,16 @@
                 <!-- Main Form -->
                 <div class="col-span-12 lg:col-span-7">
                     <div class="max-w-[640px]">
-                        <!-- User Profile Card -->
+                        <!-- Organization Profile Card -->
                         <div class="bg-white border border-gray-200 rounded-lg p-4 mb-6 shadow-sm">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="font-medium text-gray-900">{{ $reviewedUser->name }}</h3>
+                                    <h3 class="font-medium text-gray-900">{{ $reviewedOrganization->organization_name }}</h3>
                                     <div class="flex items-center space-x-4 mt-1">
                                         <span class="text-sm text-gray-600">{{ $transactionCount }} transaksi</span>
                                         <div class="flex items-center space-x-1">
@@ -100,7 +100,7 @@
                         <!-- Form -->
                         <form action="{{ route('review.create.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="reviewForm">
                             @csrf
-                            <input type="hidden" name="reviewed_user_id" value="{{ $reviewedUser->id }}">
+                            <input type="hidden" name="reviewed_organization_id" value="{{ $reviewedOrganization->id }}">
 
                             <!-- Rating -->
                             <div class="space-y-2">

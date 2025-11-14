@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reviewed_user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('reviewed_organization_id')->constrained('organizations')->onDelete('cascade');
+            $table->foreignId('reviewer_id')->constrained('organizations')->onDelete('cascade');
             $table->tinyInteger('rating')->unsigned(); // 1-5 stars
             $table->string('title')->nullable(); // Judul singkat (opsional)
             $table->text('review_text'); // Ulasan (required, 20-500 karakter)
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
             
             // Indexes untuk performa query
-            $table->index('reviewed_user_id');
+            $table->index('reviewed_organization_id');
             $table->index('reviewer_id');
             $table->index('rating');
         });

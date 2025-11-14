@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
-use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,38 +16,39 @@ class CreateReviewController extends Controller
      */
     public function create(Request $request)
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
+        // Check if organization is authenticated
+        $reviewerId = $request->session()->get('organization_id');
+        if (!$reviewerId) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu untuk memberikan review.');
         }
 
-        $reviewedUserId = $request->query('user_id');
+        $reviewedOrganizationId = $request->query('organization_id');
         
-        if (!$reviewedUserId) {
-            return redirect()->back()->with('error', 'User ID tidak ditemukan.');
+        if (!$reviewedOrganizationId) {
+            return redirect()->back()->with('error', 'Organization ID tidak ditemukan.');
         }
 
-        $reviewedUser = User::find($reviewedUserId);
+        $reviewedOrganization = Organization::find($reviewedOrganizationId);
         
-        if (!$reviewedUser) {
-            return redirect()->back()->with('error', 'User tidak ditemukan.');
+        if (!$reviewedOrganization) {
+            return redirect()->back()->with('error', 'Organisasi tidak ditemukan.');
         }
 
-        // Prevent users from reviewing themselves
-        if (Auth::id() == $reviewedUserId) {
-            return redirect()->back()->with('error', 'Anda tidak dapat memberikan review kepada diri sendiri.');
+        // Prevent organizations from reviewing themselves
+        if ($reviewerId == $reviewedOrganizationId) {
+            return redirect()->back()->with('error', 'Anda tidak dapat memberikan review kepada organisasi sendiri.');
         }
 
         // Calculate average rating and transaction count (placeholder)
-        $averageRating = Review::where('reviewed_user_id', $reviewedUserId)
+        $averageRating = Review::where('reviewed_organization_id', $reviewedOrganizationId)
             ->avg('rating') ?? 0;
-        $reviewCount = Review::where('reviewed_user_id', $reviewedUserId)->count();
+        $reviewCount = Review::where('reviewed_organization_id', $reviewedOrganizationId)->count();
         
         // For now, using review count as transaction count placeholder
         $transactionCount = $reviewCount; // Replace with actual transaction count when available
 
         return view('create-review', [
-            'reviewedUser' => $reviewedUser,
+            'reviewedOrganization' => $reviewedOrganization,
             'averageRating' => round($averageRating, 1),
             'transactionCount' => $transactionCount,
         ]);
@@ -59,13 +59,14 @@ class CreateReviewController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
+        // Check if organization is authenticated
+        $reviewerId = $request->session()->get('organization_id');
+        if (!$reviewerId) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu untuk memberikan review.');
         }
 
         $validator = Validator::make($request->all(), [
-            'reviewed_user_id' => 'required|exists:users,id',
+            'reviewed_organization_id' => 'required|exists:organizations,id',
             'rating' => 'required|integer|min:1|max:5',
             'title' => 'nullable|string|max:255',
             'review_text' => 'required|string|min:20|max:500',
@@ -73,8 +74,8 @@ class CreateReviewController extends Controller
             'images.*' => 'image|mimes:jpeg,jpg,png|max:2048', // 2MB max
             'show_name' => 'nullable|boolean',
         ], [
-            'reviewed_user_id.required' => 'User ID wajib diisi',
-            'reviewed_user_id.exists' => 'User tidak ditemukan',
+            'reviewed_organization_id.required' => 'Organization ID wajib diisi',
+            'reviewed_organization_id.exists' => 'Organisasi tidak ditemukan',
             'rating.required' => 'Rating wajib dipilih',
             'rating.min' => 'Rating minimal 1 bintang',
             'rating.max' => 'Rating maksimal 5 bintang',
@@ -93,21 +94,21 @@ class CreateReviewController extends Controller
                 ->withInput();
         }
 
-        // Prevent users from reviewing themselves
-        if (Auth::id() == $request->reviewed_user_id) {
+        // Prevent organizations from reviewing themselves
+        if ($reviewerId == $request->reviewed_organization_id) {
             return back()
-                ->withErrors(['reviewed_user_id' => 'Anda tidak dapat memberikan review kepada diri sendiri.'])
+                ->withErrors(['reviewed_organization_id' => 'Anda tidak dapat memberikan review kepada organisasi sendiri.'])
                 ->withInput();
         }
 
-        // Check if user already reviewed this user (optional - remove if multiple reviews are allowed)
-        $existingReview = Review::where('reviewer_id', Auth::id())
-            ->where('reviewed_user_id', $request->reviewed_user_id)
+        // Check if organization already reviewed this organization (optional - remove if multiple reviews are allowed)
+        $existingReview = Review::where('reviewer_id', $reviewerId)
+            ->where('reviewed_organization_id', $request->reviewed_organization_id)
             ->first();
 
         if ($existingReview) {
             return back()
-                ->withErrors(['review' => 'Anda sudah memberikan review untuk user ini.'])
+                ->withErrors(['review' => 'Anda sudah memberikan review untuk organisasi ini.'])
                 ->withInput();
         }
 
@@ -126,8 +127,8 @@ class CreateReviewController extends Controller
 
         // Create review
         Review::create([
-            'reviewed_user_id' => $request->reviewed_user_id,
-            'reviewer_id' => Auth::id(),
+            'reviewed_organization_id' => $request->reviewed_organization_id,
+            'reviewer_id' => $reviewerId,
             'rating' => $request->rating,
             'title' => $request->title,
             'review_text' => $request->review_text,
@@ -136,7 +137,7 @@ class CreateReviewController extends Controller
         ]);
 
         return redirect()
-            ->route('review.read', ['user_id' => $request->reviewed_user_id])
+            ->route('review.read', ['organization_id' => $request->reviewed_organization_id])
             ->with('success', 'Review berhasil dikirim. Terima kasih atas ulasan Anda!');
     }
 }

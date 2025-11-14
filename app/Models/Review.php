@@ -11,7 +11,7 @@ class Review extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reviewed_user_id',
+        'reviewed_organization_id',
         'reviewer_id',
         'rating',
         'title',
@@ -28,19 +28,19 @@ class Review extends Model
     ];
 
     /**
-     * Get the user being reviewed.
+     * Get the organization being reviewed.
      */
-    public function reviewedUser(): BelongsTo
+    public function reviewedOrganization(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'reviewed_user_id');
+        return $this->belongsTo(Organization::class, 'reviewed_organization_id');
     }
 
     /**
-     * Get the user who wrote the review.
+     * Get the organization who wrote the review.
      */
     public function reviewer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'reviewer_id');
+        return $this->belongsTo(Organization::class, 'reviewer_id');
     }
 }
 

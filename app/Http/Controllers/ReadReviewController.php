@@ -3,40 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
-use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 
 class ReadReviewController extends Controller
 {
     /**
-     * Menampilkan semua review untuk user tertentu.
+     * Menampilkan semua review untuk organization tertentu.
      */
     public function show(Request $request)
     {
-        $userId = $request->query('user_id') ?? $request->route('user_id');
+        $organizationId = $request->query('organization_id') ?? $request->route('organization_id');
         
-        if (!$userId) {
-            return redirect()->back()->with('error', 'User ID tidak ditemukan.');
+        if (!$organizationId) {
+            return redirect()->back()->with('error', 'Organization ID tidak ditemukan.');
         }
 
-        $user = User::find($userId);
+        $organization = Organization::find($organizationId);
         
-        if (!$user) {
-            return redirect()->back()->with('error', 'User tidak ditemukan.');
+        if (!$organization) {
+            return redirect()->back()->with('error', 'Organisasi tidak ditemukan.');
         }
 
-        // Get all reviews for this user
-        $reviews = Review::where('reviewed_user_id', $userId)
+        // Get all reviews for this organization
+        $reviews = Review::where('reviewed_organization_id', $organizationId)
             ->with(['reviewer' => function ($query) {
-                $query->select('id', 'name', 'email');
+                $query->select('id', 'organization_name', 'email');
             }])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         // Calculate statistics
-        $totalReviews = Review::where('reviewed_user_id', $userId)->count();
-        $averageRating = Review::where('reviewed_user_id', $userId)->avg('rating') ?? 0;
-        $ratingDistribution = Review::where('reviewed_user_id', $userId)
+        $totalReviews = Review::where('reviewed_organization_id', $organizationId)->count();
+        $averageRating = Review::where('reviewed_organization_id', $organizationId)->avg('rating') ?? 0;
+        $ratingDistribution = Review::where('reviewed_organization_id', $organizationId)
             ->selectRaw('rating, COUNT(*) as count')
             ->groupBy('rating')
             ->orderBy('rating', 'desc')
@@ -46,11 +46,12 @@ class ReadReviewController extends Controller
         // For now, using review count as transaction count placeholder
         $transactionCount = $totalReviews; // Replace with actual transaction count when available
 
-        // Check if current user is viewing their own reviews
-        $isOwnProfile = auth()->check() && auth()->id() == $userId;
+        // Check if current organization is viewing their own reviews
+        $currentOrganizationId = $request->session()->get('organization_id');
+        $isOwnProfile = $currentOrganizationId && $currentOrganizationId == $organizationId;
 
         return view('read-review', [
-            'user' => $user,
+            'organization' => $organization,
             'reviews' => $reviews,
             'totalReviews' => $totalReviews,
             'averageRating' => round($averageRating, 1),
