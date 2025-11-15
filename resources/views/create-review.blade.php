@@ -64,7 +64,7 @@
                     <!-- Organization Profile Card -->
                     <div class="bg-white border border-gray-200 rounded-lg p-8 mb-6 shadow-sm">
                             <div class="flex items-center space-x-4">
-                                <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
@@ -154,13 +154,13 @@
                             <button
                                 type="button"
                                 onclick="window.history.back()"
-                                class="text-gray-700 font-medium py-2.5 px-8 rounded-lg hover:bg-gray-50 border border-gray-300 transition-colors min-w-[460px]"
+                                class="text-gray-700 font-medium py-2.5 px-8 rounded-lg hover:bg-gray-50 border border-gray-300 transition-colors min-w-[590px]"
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
-                                class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-sm transition-all hover:shadow-md min-w-[460px]"
+                                class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-sm transition-all hover:shadow-md min-w-[590px]"
                             >
                                 Kirim Review
                             </button>
