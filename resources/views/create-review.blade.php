@@ -58,14 +58,13 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-12 gap-6">
+            <div class="flex justify-center">
                 <!-- Main Form -->
-                <div class="col-span-12 lg:col-span-7">
-                    <div class="max-w-[640px]">
-                        <!-- Organization Profile Card -->
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-6 shadow-sm">
+                <div class="w-full max-w-[1200px]">
+                    <!-- Organization Profile Card -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-8 mb-6 shadow-sm">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
@@ -83,31 +82,31 @@
                                     </div>
                                 </div>
                             </div>
+                    </div>
+
+                    <!-- Error Messages -->
+                    @if ($errors->any())
+                        <div class="mb-6 p-4 border border-red-300 bg-red-50 rounded-lg text-sm text-red-800">
+                            <p class="font-medium mb-2">Periksa kembali form Anda:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    @endif
 
-                        <!-- Error Messages -->
-                        @if ($errors->any())
-                            <div class="mb-6 p-4 border border-red-300 bg-red-50 rounded-lg text-sm text-red-800">
-                                <p class="font-medium mb-2">Periksa kembali form Anda:</p>
-                                <ul class="list-disc list-inside space-y-1">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
+                    <!-- Form -->
+                    <form action="{{ route('review.create.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="reviewForm">
+                        @csrf
+                        <input type="hidden" name="reviewed_organization_id" value="{{ $reviewedOrganization->id }}">
 
-                        <!-- Form -->
-                        <form action="{{ route('review.create.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="reviewForm">
-                            @csrf
-                            <input type="hidden" name="reviewed_organization_id" value="{{ $reviewedOrganization->id }}">
-
-                            <!-- Rating -->
-                            <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-900">
-                                    Rating <span class="text-red-600">*</span>
-                                </label>
-                                <div class="flex items-center space-x-2" id="rating-container">
+                        <!-- Rating -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-900">
+                                Rating <span class="text-red-600">*</span>
+                            </label>
+                            <div class="flex items-center space-x-2" id="rating-container">
                                     @for($i = 1; $i <= 5; $i++)
                                         <button type="button" class="rating-star" data-rating="{{ $i }}">
                                             <svg class="w-8 h-8 star-empty" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,231 +123,211 @@
                                         </svg>
                                         {{ $message }}
                                     </p>
-                                @enderror
-                            </div>
-
-                            <!-- Title -->
-                            <div class="space-y-2">
-                                <label for="title" class="block text-sm font-medium text-gray-900">
-                                    Judul Singkat (Opsional)
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    name="title"
-                                    value="{{ old('title') }}"
-                                    placeholder="Contoh: Transaksi sangat lancar"
-                                    class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('title') border-red-500 @enderror"
-                                />
-                                @error('title')
-                                    <p class="text-red-600 text-sm flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Action Buttons (Mobile) -->
-                            <div class="lg:hidden flex items-center justify-between pt-4 border-t border-gray-200">
-                                <button
-                                    type="button"
-                                    onclick="window.history.back()"
-                                    class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 border border-gray-300"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg"
-                                >
-                                    Kirim Review
-                                </button>
-                            </div>
-
-                            <!-- Review Text -->
-                            <div class="space-y-2">
-                                <label for="review_text" class="block text-sm font-medium text-gray-900">
-                                    Ulasan <span class="text-red-600">*</span>
-                                </label>
-                                <textarea
-                                    id="review_text"
-                                    name="review_text"
-                                    rows="6"
-                                    placeholder="Ceritakan pengalaman Anda dengan pengguna ini. Apa yang membuat transaksi dengan mereka menyenangkan atau perlu dipertimbangkan?"
-                                    class="w-full px-4 py-2 border rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('review_text') border-red-500 @enderror"
-                                    required
-                                    oninput="updateCharCount(this)"
-                                    minlength="20"
-                                    maxlength="500"
-                                >{{ old('review_text') }}</textarea>
-                                <p class="text-gray-500 text-sm">
-                                    <span id="char-count">0</span>/500 karakter • Minimal 20 karakter
-                                </p>
-                                @error('review_text')
-                                    <p class="text-red-600 text-sm flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Image Upload -->
-                            <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-900">
-                                    Bukti/Gambar (Opsional)
-                                </label>
-                                <p class="text-sm text-gray-600 mb-2">
-                                    Maksimal 3 gambar, format JPG/PNG, ukuran maksimal 2MB
-                                </p>
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                                    <input
-                                        type="file"
-                                        id="images"
-                                        name="images[]"
-                                        multiple
-                                        accept="image/jpeg,image/jpg,image/png"
-                                        class="hidden"
-                                        onchange="previewImages(this)"
-                                    />
-                                    <label for="images" class="cursor-pointer">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <p class="mt-2 text-sm text-gray-600">
-                                            <span class="font-semibold">Klik untuk upload</span> atau drag & drop
-                                        </p>
-                                        <p class="text-xs text-gray-500 mt-1">JPG, PNG (max. 2MB)</p>
-                                    </label>
-                                    <div id="image-preview" class="mt-4 grid grid-cols-3 gap-4 hidden"></div>
-                                </div>
-                                @error('images')
-                                    <p class="text-red-600 text-sm flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                                @error('images.*')
-                                    <p class="text-red-600 text-sm flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Privacy Option -->
-                            <div class="space-y-2">
-                                <div class="flex items-start space-x-2">
-                                    <input
-                                        type="checkbox"
-                                        id="show_name"
-                                        name="show_name"
-                                        value="1"
-                                        {{ old('show_name', true) ? 'checked' : '' }}
-                                        class="mt-1 w-4 h-4 text-teal-600 focus:ring-teal-500 rounded border-gray-300"
-                                    />
-                                    <div class="flex-1">
-                                        <label for="show_name" class="text-sm text-gray-900 cursor-pointer flex items-center gap-2">
-                                            <span>Tampilkan nama saya di review ini</span>
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </label>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Jika tidak dicentang, review akan ditampilkan sebagai "Anonim"
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Desktop Action Buttons -->
-                            <div class="hidden lg:flex items-center justify-between pt-4 border-t border-gray-200">
-                                <button
-                                    type="button"
-                                    onclick="window.history.back()"
-                                    class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 border border-gray-300"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg"
-                                >
-                                    Kirim Review
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="col-span-12 lg:col-span-5">
-                    <div class="space-y-6">
-                        <!-- Tips for Writing Reviews -->
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-3">
-                                <h3 class="font-semibold text-gray-900">Tips Menulis Review</h3>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Berikan penilaian yang jujur berdasarkan pengalaman Anda</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Jelaskan secara detail tentang responsivitas, ketepatan waktu, dan kondisi barang</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Hindari bahasa kasar atau menyinggung</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Tambahkan foto jika ada bukti yang mendukung</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Review yang konstruktif membantu komunitas tumbuh</span>
-                                </li>
-                            </ul>
+                            @enderror
                         </div>
 
-                        <!-- Review Policy -->
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-3">
-                                <h3 class="font-semibold text-gray-900">Kebijakan Ulasan</h3>
-                            </div>
-                            <p class="text-sm text-gray-700 mb-3">
-                                Pastikan review Anda mematuhi pedoman komunitas NextUse. Review yang melanggar akan dihapus.
+                        <!-- Title -->
+                        <div class="space-y-2">
+                            <label for="title" class="block text-sm font-medium text-gray-900">
+                                Judul Singkat (Opsional)
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                value="{{ old('title') }}"
+                                placeholder="Contoh: Transaksi sangat lancar"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('title') border-red-500 @enderror"
+                            />
+                            @error('title')
+                                <p class="text-red-600 text-sm flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Action Buttons - After Title -->
+                        <div class="flex items-center justify-center gap-4 pt-2">
+                            <button
+                                type="button"
+                                onclick="window.history.back()"
+                                class="text-gray-700 font-medium py-2.5 px-8 rounded-lg hover:bg-gray-50 border border-gray-300 transition-colors min-w-[460px]"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2.5 px-8 rounded-lg shadow-sm transition-all hover:shadow-md min-w-[460px]"
+                            >
+                                Kirim Review
+                            </button>
+                        </div>
+
+                        <!-- Review Text -->
+                        <div class="space-y-2">
+                            <label for="review_text" class="block text-sm font-medium text-gray-900">
+                                Ulasan <span class="text-red-600">*</span>
+                            </label>
+                            <textarea
+                                id="review_text"
+                                name="review_text"
+                                rows="6"
+                                placeholder="Ceritakan pengalaman Anda dengan pengguna ini. Apa yang membuat transaksi dengan mereka menyenangkan atau perlu dipertimbangkan?"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('review_text') border-red-500 @enderror"
+                                required
+                                oninput="updateCharCount(this)"
+                                minlength="20"
+                                maxlength="500"
+                            >{{ old('review_text') }}</textarea>
+                            <p class="text-gray-500 text-sm">
+                                <span id="char-count">0</span>/500 karakter • Minimal 20 karakter
                             </p>
-                            <a href="{{ route('syarat-ketentuan') }}" class="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1">
-                                <span>Baca Selengkapnya</span>
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
+                            @error('review_text')
+                                <p class="text-red-600 text-sm flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                            @enderror
                         </div>
-                    </div>
+
+                        <!-- Image Upload -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-900">
+                                Bukti/Gambar (Opsional)
+                            </label>
+                            <p class="text-sm text-gray-600 mb-2">
+                                Maksimal 3 gambar, format JPG/PNG, ukuran maksimal 2MB
+                            </p>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <input
+                                    type="file"
+                                    id="images"
+                                    name="images[]"
+                                    multiple
+                                    accept="image/jpeg,image/jpg,image/png"
+                                    class="hidden"
+                                    onchange="previewImages(this)"
+                                />
+                                <label for="images" class="cursor-pointer">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-600">
+                                        <span class="font-semibold">Klik untuk upload</span> atau drag & drop
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG (max. 2MB)</p>
+                                </label>
+                                <div id="image-preview" class="mt-4 grid grid-cols-3 gap-4 hidden"></div>
+                            </div>
+                            @error('images')
+                                <p class="text-red-600 text-sm flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                            @error('images.*')
+                                <p class="text-red-600 text-sm flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Privacy Option -->
+                        <div class="space-y-2">
+                            <div class="flex items-start space-x-2">
+                                <input
+                                    type="checkbox"
+                                    id="show_name"
+                                    name="show_name"
+                                    value="1"
+                                    {{ old('show_name', true) ? 'checked' : '' }}
+                                    class="mt-1 w-4 h-4 text-teal-600 focus:ring-teal-500 rounded border-gray-300"
+                                />
+                                <div class="flex-1">
+                                    <label for="show_name" class="text-sm text-gray-900 cursor-pointer flex items-center gap-2">
+                                        <span>Tampilkan nama saya di review ini</span>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </label>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        Jika tidak dicentang, review akan ditampilkan sebagai "Anonim"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tips and Policy - After Privacy Option -->
+                        <div class="space-y-4 pt-4">
+                            <!-- Tips for Writing Reviews -->
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <h3 class="font-semibold text-gray-900">Tips Menulis Review</h3>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start gap-2">
+                                        <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>Berikan penilaian yang jujur berdasarkan pengalaman Anda</span>
+                                    </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>Jelaskan secara detail tentang responsivitas, ketepatan waktu, dan kondisi barang</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>Hindari bahasa kasar atau menyinggung</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>Tambahkan foto jika ada bukti yang mendukung</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>Review yang konstruktif membantu komunitas tumbuh</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Review Policy -->
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <h3 class="font-semibold text-gray-900">Kebijakan Ulasan</h3>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-3">
+                                        Pastikan review Anda mematuhi pedoman komunitas NextUse. Review yang melanggar akan dihapus.
+                                    </p>
+                                    <a href="{{ route('syarat-ketentuan') }}" class="text-sm text-teal-600 hover:text-teal-700 font-medium inline-flex items-center gap-1">
+                                        <span>Baca Selengkapnya</span>
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -490,4 +469,3 @@
     </script>
 </body>
 </html>
-

@@ -22,21 +22,33 @@ class CreateReviewController extends Controller
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu untuk memberikan review.');
         }
 
+        // Get organization_id from query parameter and convert to integer
         $reviewedOrganizationId = $request->query('organization_id');
         
         if (!$reviewedOrganizationId) {
-            return redirect()->back()->with('error', 'Organization ID tidak ditemukan.');
+            return redirect()->route('beranda')->with('error', 'Organization ID tidak ditemukan. Pastikan URL berisi parameter organization_id.');
+        }
+
+        // Convert to integer to ensure proper comparison
+        $reviewedOrganizationId = (int) $reviewedOrganizationId;
+        
+        if ($reviewedOrganizationId <= 0) {
+            return redirect()->route('beranda')->with('error', 'Organization ID tidak valid.');
         }
 
         $reviewedOrganization = Organization::find($reviewedOrganizationId);
         
         if (!$reviewedOrganization) {
-            return redirect()->back()->with('error', 'Organisasi tidak ditemukan.');
+            return redirect()->route('beranda')->with('error', 'Organisasi dengan ID ' . $reviewedOrganizationId . ' tidak ditemukan.');
         }
 
         // Prevent organizations from reviewing themselves
+        // Convert reviewerId to integer for proper comparison
+        $reviewerId = (int) $reviewerId;
         if ($reviewerId == $reviewedOrganizationId) {
-            return redirect()->back()->with('error', 'Anda tidak dapat memberikan review kepada organisasi sendiri.');
+            return redirect()
+                ->route('beranda')
+                ->with('error', 'Anda tidak dapat memberikan review kepada organisasi sendiri. (Reviewer ID: ' . $reviewerId . ', Reviewed ID: ' . $reviewedOrganizationId . ')');
         }
 
         // Calculate average rating and transaction count (placeholder)
