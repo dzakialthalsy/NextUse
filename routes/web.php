@@ -9,6 +9,8 @@ use App\Http\Controllers\SyaratKetentuanController;
 use App\Http\Controllers\ReportUserController;
 use App\Http\Controllers\ReportItemController;
 use App\Http\Controllers\PostItemController;
+use App\Http\Controllers\CreateReviewController;
+use App\Http\Controllers\ReadReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -38,3 +40,7 @@ Route::post('/report-item', [ReportItemController::class, 'store'])->name('repor
 Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
 Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');
 Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->name('post-item.save-draft');
+
+Route::get('/review/create', [CreateReviewController::class, 'create'])->name('review.create');
+Route::post('/review/create', [CreateReviewController::class, 'store'])->name('review.create.store');
+Route::get('/review', [ReadReviewController::class, 'show'])->name('review.read');

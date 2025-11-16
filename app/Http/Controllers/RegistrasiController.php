@@ -108,7 +108,7 @@ class RegistrasiController extends Controller
                 }
                 
                 // Pastikan direktori storage ada
-                $storagePath = storage_path('app/public/organization-documents');
+                $storagePath = storage_path('C:/laragon/www/NextUse/storage/app/public/organization-documents');
                 if (!is_dir($storagePath)) {
                     Storage::disk('public')->makeDirectory('organization-documents');
                 }

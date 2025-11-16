@@ -11,7 +11,7 @@ class Item extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id',
+        'organization_id',
         'judul',
         'kategori',
         'kondisi',
@@ -31,10 +31,10 @@ class Item extends Model
     ];
 
     /**
-     * Get the user that owns the item.
+     * Get the organization that owns the item.
      */
-    public function user(): BelongsTo
+    public function organization(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Organization::class);
     }
 }
