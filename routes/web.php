@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ChatMessageController;
+use App\Http\Controllers\ChatMessageStoreController;
+use App\Http\Controllers\ChatMessageDeleteController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LoginController;
@@ -71,12 +73,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/mengelola-data-barang/items/{item}', [MengelolaDataBarangController::class, 'destroyItem'])->name('mengelola-data.items.destroy');
 });
 
+// Chat Routes - Read Operations
 Route::controller(ChatMessageController::class)->group(function () {
     Route::get('/chat', 'index')->name('chat.index');
-    Route::get('/chat/{userId}', 'show')->name('chat.show');
+    Route::get('/chat/{conversationId}', 'show')->name('chat.show');
+});
+
+// Chat Routes - Create Operations
+Route::controller(ChatMessageStoreController::class)->group(function () {
+    Route::post('/chat/start', 'start')->name('chat.start');
     Route::post('/chat/messages', 'store')->name('chat.store');
-    Route::get('/chat/messages/{chatMessage}/edit', 'edit')->name('chat.edit');
-    Route::put('/chat/messages/{chatMessage}', 'update')->name('chat.update');
+});
+
+// Chat Routes - Delete Operations
+Route::controller(ChatMessageDeleteController::class)->group(function () {
     Route::delete('/chat/messages/{chatMessage}', 'destroy')->name('chat.destroy');
 });
 

@@ -17,7 +17,7 @@
         <div class="flex items-center gap-4">
             <button type="button" class="flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white">
                 <span>Semua</span>
-                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">2</span>
+                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">{{ $conversations->count() }}</span>
             </button>
             <button type="button" class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200">
                 Belum Dibaca
@@ -31,7 +31,7 @@
 
         {{-- Conversation List --}}
         <div class="space-y-1 rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
-            @foreach ($conversations as $conversation)
+            @forelse ($conversations as $conversation)
                 <a href="{{ route('chat.show', $conversation['id']) }}" 
                     class="flex items-center gap-4 px-4 py-4 hover:bg-slate-50 transition">
                     {{-- Avatar --}}
@@ -56,7 +56,11 @@
                         <p class="text-sm text-slate-600 mt-1 truncate">{{ $conversation['last_message'] }}</p>
                     </div>
                 </a>
-            @endforeach
+            @empty
+                <div class="p-6 text-center text-sm text-slate-500">
+                    Belum ada percakapan.
+                </div>
+            @endforelse
         </div>
     </div>
 @endsection
