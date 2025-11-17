@@ -73,6 +73,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::controller(ChatMessageController::class)->group(function () {
     Route::get('/chat', 'index')->name('chat.index');
+    Route::get('/chat/{userId}', 'show')->name('chat.show');
     Route::post('/chat/messages', 'store')->name('chat.store');
     Route::get('/chat/messages/{chatMessage}/edit', 'edit')->name('chat.edit');
     Route::put('/chat/messages/{chatMessage}', 'update')->name('chat.update');
