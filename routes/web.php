@@ -68,6 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/mengelola-data-barang', [MengelolaDataBarangController::class, 'index'])->name('mengelola-data.index');
     Route::delete('/mengelola-data-barang/users/{organization}', [MengelolaDataBarangController::class, 'destroyUser'])->name('mengelola-data.users.destroy');
     Route::delete('/mengelola-data-barang/items/{item}', [MengelolaDataBarangController::class, 'destroyItem'])->name('mengelola-data.items.destroy');
+});
 
 Route::controller(ChatMessageController::class)->group(function () {
     Route::get('/chat', 'index')->name('chat.index');
