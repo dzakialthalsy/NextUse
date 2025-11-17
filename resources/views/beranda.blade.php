@@ -73,8 +73,12 @@
                      data-price="{{ $product['price'] }}"
                      data-time="{{ now()->timestamp }}">
                     
-                    <div class="relative {{ $product['img_class'] ?? 'h-56' }} product-image-bg flex items-center justify-center">
-                        <img src="{{ asset('images/product-placeholder.jpg') }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover opacity-70">
+                    <div class="relative {{ $product['img_class'] ?? 'h-56' }} product-image-bg flex items-center justify-center overflow-hidden">
+                        @if(!empty($product['foto_barang']) && is_array($product['foto_barang']) && count($product['foto_barang']) > 0)
+                            <img src="{{ asset('storage/' . $product['foto_barang'][0]) }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover">
+                        @else
+                            <img src="{{ asset('images/product-placeholder.jpg') }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover opacity-70">
+                        @endif
                         
                         <span class="absolute top-4 right-4 text-xs font-normal px-3 py-1 rounded-lg bg-green-100 text-green-800">
                             {{ $product['status'] ?? 'Tersedia' }}
@@ -85,7 +89,7 @@
                         <h3 class="text-base font-semibold text-gray-900 mb-2">{{ $product['name'] }}</h3>
                         
                         <div class="flex flex-wrap gap-2 mb-3">
-                            <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-800 font-normal">{{ ucfirst($product['category']) }}</span>
+                            <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-800 font-normal">{{ $product['category_display'] ?? ucfirst($product['category']) }}</span>
                             <span class="text-xs px-2 py-1 rounded-lg border border-gray-300 text-gray-900 font-normal">{{ ucfirst($product['condition']) }}</span>
                         </div>
 
@@ -112,10 +116,10 @@
             @endforelse
         </div>
 
-        <button class="fixed right-6 bottom-6 flex items-center space-x-2 px-6 py-4 main-gradient text-white font-medium rounded-full shadow-2xl hover:bg-teal-700 transition duration-300 transform hover:scale-105 z-50">
+        <a href="{{ route('post-item.create') }}" class="fixed right-6 bottom-6 flex items-center space-x-2 px-6 py-4 main-gradient text-white font-medium rounded-full shadow-2xl hover:bg-teal-700 transition duration-300 transform hover:scale-105 z-50">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
             <span>Posting Barang</span>
-        </button>
+        </a>
 
     </main>
 
