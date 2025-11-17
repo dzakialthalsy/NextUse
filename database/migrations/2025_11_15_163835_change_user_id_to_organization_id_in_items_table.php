@@ -22,7 +22,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            //
+            // Drop foreign key constraint for organization_id
+            $table->dropForeign(['organization_id']);
+            // Drop organization_id column
+            $table->dropColumn('organization_id');
+            // Add user_id column back
+            $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
         });
     }
 };
