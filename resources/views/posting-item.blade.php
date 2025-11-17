@@ -44,9 +44,11 @@
                     <div class="max-w-[640px]">
                         <!-- Header -->
                         <div class="mb-8">
-                            <h1 class="text-3xl font-semibold mb-2 text-gray-900">Posting Barang</h1>
+                            <h1 class="text-3xl font-semibold mb-2 text-gray-900">
+                                {{ $editing ? 'Perbarui Barang' : 'Posting Barang' }}
+                            </h1>
                             <p class="text-gray-600">
-                                Bagikan atau barter barang Anda secara gratis.
+                                {{ $editing ? 'Perbarui detail barang yang sudah kamu bagikan.' : 'Bagikan atau barter barang Anda secara gratis.' }}
                             </p>
                         </div>
 
@@ -58,8 +60,23 @@
                         @endif
 
                         <!-- Form -->
+                        @php
+                            $editing = isset($item);
+                            $oldPreferensi = old('preferensi', $editing ? ($item->preferensi ?? []) : []);
+                            if (! is_array($oldPreferensi)) {
+                                $oldPreferensi = [];
+                            }
+                            $existingPhotos = $editing && is_array($item->foto_barang) ? $item->foto_barang : [];
+                        @endphp
+
                         <form action="{{ route('post-item.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="itemForm">
                             @csrf
+                            @if($editing)
+                                <input type="hidden" name="item_id" value="{{ $item->id }}">
+                                @foreach($existingPhotos as $foto)
+                                    <input type="hidden" name="existing_foto_barang[]" value="{{ $foto }}">
+                                @endforeach
+                            @endif
 
                             <!-- Error Messages -->
                             @if ($errors->any())
@@ -82,7 +99,7 @@
                                     type="text"
                                     id="judul"
                                     name="judul"
-                                    value="{{ old('judul') }}"
+                                    value="{{ old('judul', $item->judul ?? '') }}"
                                     placeholder="Contoh: Kamera Digital Canon EOS 700D"
                                     class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('judul') border-red-500 @enderror"
                                     required
@@ -109,14 +126,11 @@
                                     required
                                 >
                                     <option value="">Pilih kategori barang</option>
-                                    <option value="Elektronik" {{ old('kategori') == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                                    <option value="Perabotan" {{ old('kategori') == 'Perabotan' ? 'selected' : '' }}>Perabotan</option>
-                                    <option value="Pakaian" {{ old('kategori') == 'Pakaian' ? 'selected' : '' }}>Pakaian</option>
-                                    <option value="Buku & Alat Tulis" {{ old('kategori') == 'Buku & Alat Tulis' ? 'selected' : '' }}>Buku & Alat Tulis</option>
-                                    <option value="Mainan & Hobi" {{ old('kategori') == 'Mainan & Hobi' ? 'selected' : '' }}>Mainan & Hobi</option>
-                                    <option value="Olahraga" {{ old('kategori') == 'Olahraga' ? 'selected' : '' }}>Olahraga</option>
-                                    <option value="Dapur" {{ old('kategori') == 'Dapur' ? 'selected' : '' }}>Dapur</option>
-                                    <option value="Lainnya" {{ old('kategori') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                    @foreach (['Elektronik','Perabotan','Pakaian','Buku & Alat Tulis','Mainan & Hobi','Olahraga','Dapur','Lainnya'] as $kategori)
+                                        <option value="{{ $kategori }}" {{ old('kategori', $item->kategori ?? '') == $kategori ? 'selected' : '' }}>
+                                            {{ $kategori }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('kategori')
                                     <p class="text-red-600 text-sm flex items-center gap-1">
@@ -135,15 +149,15 @@
                                 </label>
                                 <div class="flex flex-col sm:flex-row gap-4">
                                     <div class="flex items-center space-x-2">
-                                        <input type="radio" id="kondisi-baru" name="kondisi" value="baru" {{ old('kondisi') == 'baru' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
+                                        <input type="radio" id="kondisi-baru" name="kondisi" value="baru" {{ old('kondisi', $item->kondisi ?? '') == 'baru' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
                                         <label for="kondisi-baru" class="text-sm text-gray-900 cursor-pointer">Baru</label>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <input type="radio" id="kondisi-like-new" name="kondisi" value="like-new" {{ old('kondisi') == 'like-new' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
+                                        <input type="radio" id="kondisi-like-new" name="kondisi" value="like-new" {{ old('kondisi', $item->kondisi ?? '') == 'like-new' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
                                         <label for="kondisi-like-new" class="text-sm text-gray-900 cursor-pointer">Like New</label>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <input type="radio" id="kondisi-bekas" name="kondisi" value="bekas" {{ old('kondisi') == 'bekas' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
+                                        <input type="radio" id="kondisi-bekas" name="kondisi" value="bekas" {{ old('kondisi', $item->kondisi ?? '') == 'bekas' ? 'checked' : '' }} class="w-4 h-4 text-teal-600 focus:ring-teal-500" required />
                                         <label for="kondisi-bekas" class="text-sm text-gray-900 cursor-pointer">Bekas</label>
                                     </div>
                                 </div>
@@ -177,9 +191,9 @@
                                     class="w-full px-4 py-2 border rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('deskripsi') border-red-500 @enderror"
                                     required
                                     oninput="updateCharCount(this)"
-                                >{{ old('deskripsi') }}</textarea>
+                                >{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
                                 <p id="deskripsi-helper" class="text-gray-500 text-sm">
-                                    Minimal 30 karakter. <span id="char-count">0</span>/30
+                                    Minimal 30 karakter. <span id="char-count">{{ strlen(old('deskripsi', $item->deskripsi ?? '')) }}</span>/30
                                 </p>
                                 @error('deskripsi')
                                     <p class="text-red-600 text-sm flex items-center gap-1">
@@ -205,7 +219,7 @@
                                         accept="image/*"
                                         class="hidden"
                                         onchange="previewImages(this)"
-                                        required
+                                        @unless($editing) required @endunless
                                     />
                                     <label for="foto_barang" class="cursor-pointer">
                                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -217,6 +231,22 @@
                                         <p class="text-xs text-gray-500 mt-1">Minimal 1 foto, maksimal 8 foto (maks 5MB per foto)</p>
                                     </label>
                                     <div id="image-preview" class="mt-4 grid grid-cols-4 gap-4 hidden"></div>
+                                    @if($editing && count($existingPhotos))
+                                        <div class="mt-4 text-left">
+                                            <p class="text-xs text-gray-500 mb-2">Foto saat ini:</p>
+                                            <div class="grid grid-cols-3 gap-3">
+                                                @foreach($existingPhotos as $foto)
+                                                    @php
+                                                        $fotoUrl = \Illuminate\Support\Str::startsWith($foto, ['http://', 'https://'])
+                                                            ? $foto
+                                                            : asset('storage/'.$foto);
+                                                    @endphp
+                                                    <img src="{{ $fotoUrl }}" alt="Foto {{ $loop->iteration }}" class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                                                @endforeach
+                                            </div>
+                                            <p class="text-xs text-gray-400 mt-2">Unggah foto baru untuk menambahkan gambar tambahan.</p>
+                                        </div>
+                                    @endif
                                 </div>
                                 @error('foto_barang')
                                     <p class="text-red-600 text-sm flex items-center gap-1">
@@ -237,7 +267,7 @@
                                     type="text"
                                     id="lokasi"
                                     name="lokasi"
-                                    value="{{ old('lokasi') }}"
+                                    value="{{ old('lokasi', $item->lokasi ?? '') }}"
                                     placeholder="Cari lokasi... (e.g., Jakarta Selatan)"
                                     list="lokasi-suggestions"
                                     class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 @error('lokasi') border-red-500 @enderror"
@@ -272,9 +302,11 @@
                                     name="status"
                                     class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                                 >
-                                    <option value="tersedia" {{ old('status', 'tersedia') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="reserved" {{ old('status') == 'reserved' ? 'selected' : '' }}>Reserved</option>
-                                    <option value="habis" {{ old('status') == 'habis' ? 'selected' : '' }}>Habis</option>
+                                    @foreach (['tersedia' => 'Tersedia', 'reserved' => 'Reserved', 'habis' => 'Habis'] as $value => $label)
+                                        <option value="{{ $value }}" {{ old('status', $item->status ?? 'tersedia') == $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 <p class="text-gray-500 text-sm">Status saat ini untuk barang ini</p>
                             </div>
@@ -289,7 +321,7 @@
                                             id="pref-giveaway"
                                             name="preferensi[]"
                                             value="giveaway"
-                                            {{ in_array('giveaway', old('preferensi', [])) ? 'checked' : '' }}
+                                            {{ in_array('giveaway', $oldPreferensi) ? 'checked' : '' }}
                                             class="w-4 h-4 text-teal-600 focus:ring-teal-500 rounded"
                                         />
                                         <label for="pref-giveaway" class="text-sm text-gray-900 cursor-pointer">Giveaway (Gratis)</label>
@@ -300,7 +332,7 @@
                                             id="pref-barter"
                                             name="preferensi[]"
                                             value="barter"
-                                            {{ in_array('barter', old('preferensi', [])) ? 'checked' : '' }}
+                                            {{ in_array('barter', $oldPreferensi) ? 'checked' : '' }}
                                             class="w-4 h-4 text-teal-600 focus:ring-teal-500 rounded"
                                         />
                                         <label for="pref-barter" class="text-sm text-gray-900 cursor-pointer">Barter (Tukar barang)</label>
@@ -318,7 +350,7 @@
                                     rows="3"
                                     placeholder="Contoh: COD area Jakarta Selatan, atau bisa kirim dengan biaya ongkir..."
                                     class="w-full px-4 py-2 border rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                                >{{ old('catatan_pengambilan') }}</textarea>
+                                >{{ old('catatan_pengambilan', $item->catatan_pengambilan ?? '') }}</textarea>
                                 <p class="text-gray-500 text-sm">Informasi tambahan tentang cara pengambilan</p>
                             </div>
 
@@ -330,6 +362,7 @@
                                     name="setuju_kebijakan"
                                     value="1"
                                     class="mt-1 w-4 h-4 text-teal-600 focus:ring-teal-500 rounded @error('setuju_kebijakan') border-red-500 @enderror"
+                                    {{ old('setuju_kebijakan', $editing ? true : false) ? 'checked' : '' }}
                                     required
                                 />
                                 <div class="flex-1">
@@ -362,25 +395,13 @@
                                     </svg>
                                     Terbitkan
                                 </button>
-                                <div class="flex items-center justify-center gap-3">
-                                    <button
-                                        type="button"
-                                        onclick="saveDraft()"
-                                        class="border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg flex-1 flex items-center justify-center gap-2 hover:bg-gray-50"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        Simpan Draft
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onclick="window.history.back()"
-                                        class="text-gray-700 font-medium py-2 px-4 rounded-lg flex-1 hover:bg-gray-50"
-                                    >
-                                        Batal
-                                    </button>
-                                </div>
+                                <button
+                                    type="button"
+                                    onclick="window.history.back()"
+                                    class="text-gray-700 font-medium py-2 px-4 rounded-lg w-full hover:bg-gray-50"
+                                >
+                                    Batal
+                                </button>
                             </div>
 
                             <!-- Desktop Submit Buttons -->
@@ -392,27 +413,15 @@
                                 >
                                     Batal
                                 </button>
-                                <div class="flex items-center gap-3">
-                                    <button
-                                        type="button"
-                                        onclick="saveDraft()"
-                                        class="border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-50"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        Simpan Draft
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                        </svg>
-                                        Terbitkan
-                                    </button>
-                                </div>
+                                <button
+                                    type="submit"
+                                    class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2"
+                                >
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    Terbitkan
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -481,73 +490,40 @@
             previewImages(input);
         }
 
-        function saveDraft() {
-            const form = document.getElementById('itemForm');
-            const formData = new FormData(form);
-            
-            // Remove setuju_kebijakan from draft save
-            formData.delete('setuju_kebijakan');
-            
-            fetch('{{ route("post-item.save-draft") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                return response.json().then(data => {
-                    if (!response.ok) {
-                        return Promise.reject(data);
-                    }
-                    return data;
-                });
-            })
-            .then(data => {
-                if (data.success) {
-                    alert('Draft tersimpan');
-                } else {
-                    alert(data.message || 'Gagal menyimpan draft');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                let errorMessage = 'Gagal menyimpan draft. Silakan coba lagi.';
-                if (error.errors) {
-                    const errorList = Object.values(error.errors).flat().join('\n');
-                    errorMessage = 'Validasi gagal:\n' + errorList;
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-                alert(errorMessage);
-            });
-        }
-
         // Update preview on form change
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('itemForm');
             const previewContent = document.getElementById('preview-content');
+            const deskripsiField = document.getElementById('deskripsi');
+
+            if (deskripsiField) {
+                updateCharCount(deskripsiField);
+            }
             
-            form.addEventListener('input', function() {
-                const judul = document.getElementById('judul').value || 'Judul Barang';
-                const kategori = document.getElementById('kategori').value || 'Kategori';
-                const kondisi = document.querySelector('input[name="kondisi"]:checked')?.value || 'Kondisi';
-                const deskripsi = document.getElementById('deskripsi').value || 'Deskripsi akan muncul di sini...';
-                const lokasi = document.getElementById('lokasi').value || 'Lokasi';
-                
-                previewContent.innerHTML = `
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-900">${judul}</h4>
-                        <div class="flex gap-2">
-                            <span class="px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">${kategori}</span>
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">${kondisi}</span>
+            if (form && previewContent) {
+                const updatePreview = () => {
+                    const judul = document.getElementById('judul').value || 'Judul Barang';
+                    const kategori = document.getElementById('kategori').value || 'Kategori';
+                    const kondisi = document.querySelector('input[name="kondisi"]:checked')?.value || 'Kondisi';
+                    const deskripsi = document.getElementById('deskripsi').value || 'Deskripsi akan muncul di sini...';
+                    const lokasi = document.getElementById('lokasi').value || 'Lokasi';
+                    
+                    previewContent.innerHTML = `
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-gray-900">${judul}</h4>
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">${kategori}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">${kondisi}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-3">${deskripsi}</p>
+                            <p class="text-xs text-gray-500">📍 ${lokasi}</p>
                         </div>
-                        <p class="text-sm text-gray-600 line-clamp-3">${deskripsi}</p>
-                        <p class="text-xs text-gray-500">📍 ${lokasi}</p>
-                    </div>
-                `;
-            });
+                    `;
+                };
+
+                form.addEventListener('input', updatePreview);
+                updatePreview();
+            }
         });
     </script>
 </body>

@@ -82,7 +82,7 @@
                 <article class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition flex flex-col">
                     <div class="relative h-52 product-image-bg flex items-center justify-center overflow-hidden">
                         @if($photo)
-                            <img src="{{ Str::startsWith($photo, 'http') ? $photo : asset('storage/'.$photo) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($photo, 'http') ? $photo : asset('storage/'.$photo) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
                         @else
                             <div class="text-center text-gray-400 text-sm">
                                 <p class="font-semibold text-gray-600">Belum ada foto</p>
@@ -128,7 +128,7 @@
                         </div>
                     </div>
                     <div class="px-5 pb-5 flex gap-2">
-                        <a href="{{ route('items.edit', $item) }}" class="flex-1 text-center text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition">
+                        <a href="{{ route('post-item.create', ['item' => $item->id]) }}" class="flex-1 text-center text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition">
                             Edit
                         </a>
                         <form action="{{ route('items.destroy', $item) }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus barang ini?')">
