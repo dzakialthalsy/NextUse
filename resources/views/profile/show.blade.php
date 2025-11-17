@@ -168,15 +168,9 @@
                         <dt class="text-slate-500">Verifikasi Email</dt>
                         <dd class="text-emerald-600 font-semibold">Terverifikasi</dd>
                     </div>
-                    <div class="flex flex-col gap-3 pt-2">
-                        <div class="flex items-center justify-between">
-                            <dt class="text-slate-500">Tipe Akun</dt>
-                            <dd class="text-slate-700">Gratis</dd>
-                        </div>
-                        <button type="button"
-                            class="w-full rounded-full border border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-50">
-                            Upgrade ke Premium
-                        </button>
+                    <div class="flex items-center justify-between pt-2">
+                        <dt class="text-slate-500">Tipe Akun</dt>
+                        <dd class="text-slate-700">Gratis</dd>
                     </div>
                 </dl>
             </div>
