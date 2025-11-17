@@ -1,14 +1,16 @@
 <?php
 
+use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PostItemController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\ReportItemController;
+use App\Http\Controllers\ReportUserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SyaratKetentuanController;
-use App\Http\Controllers\ReportUserController;
-use App\Http\Controllers\ReportItemController;
-use App\Http\Controllers\PostItemController;
 use App\Http\Controllers\CreateReviewController;
 use App\Http\Controllers\ReadReviewController;
 use App\Http\Controllers\AdminReviewController;
@@ -66,4 +68,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/mengelola-data-barang', [MengelolaDataBarangController::class, 'index'])->name('mengelola-data.index');
     Route::delete('/mengelola-data-barang/users/{organization}', [MengelolaDataBarangController::class, 'destroyUser'])->name('mengelola-data.users.destroy');
     Route::delete('/mengelola-data-barang/items/{item}', [MengelolaDataBarangController::class, 'destroyItem'])->name('mengelola-data.items.destroy');
+
+Route::controller(ChatMessageController::class)->group(function () {
+    Route::get('/chat', 'index')->name('chat.index');
+    Route::post('/chat/messages', 'store')->name('chat.store');
+    Route::get('/chat/messages/{chatMessage}/edit', 'edit')->name('chat.edit');
+    Route::put('/chat/messages/{chatMessage}', 'update')->name('chat.update');
+    Route::delete('/chat/messages/{chatMessage}', 'destroy')->name('chat.destroy');
+});
+
+Route::controller(ProfileController::class)->group(function () {
+    Route::get('/profile', 'index')->name('profile.index');
+    Route::get('/profile/{profile}/edit', 'edit')->name('profile.edit');
+    Route::put('/profile/{profile}', 'update')->name('profile.update');
+    Route::delete('/profile/{profile}', 'destroy')->name('profile.destroy');
 });
