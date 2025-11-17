@@ -18,9 +18,16 @@
         <section class="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
             <div class="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-start sm:justify-between">
                 <div class="flex gap-4">
-                    <div
-                        class="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-2xl font-semibold text-white">
-                        {{ strtoupper(mb_substr($profile->full_name, 0, 1)) }}
+                    <div class="flex-shrink-0">
+                        @if ($profile->avatar_url)
+                            <img src="{{ $profile->avatar_url }}" alt="{{ $profile->full_name }}"
+                                class="h-16 w-16 rounded-full object-cover ring-2 ring-emerald-100">
+                        @else
+                            <div
+                                class="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-2xl font-semibold text-white">
+                                {{ strtoupper(mb_substr($profile->full_name, 0, 1)) }}
+                            </div>
+                        @endif
                     </div>
                     <div class="space-y-1">
                         <div>
@@ -125,36 +132,26 @@
 
             <div class="rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
                 <div class="border-b border-slate-100 px-6 py-4">
-                    <h2 class="text-sm font-semibold text-slate-900">Pengaturan</h2>
-                    <p class="text-xs text-slate-500">Kelola preferensi akun Anda</p>
+                    <h2 class="text-sm font-semibold text-slate-900">Lihat Ulasan</h2>
+                    <p class="text-xs text-slate-500">Pantau kepercayaan komunitas terhadapmu</p>
                 </div>
                 <div class="divide-y divide-slate-100 text-sm text-slate-700">
-                    <button type="button" class="flex w-full items-center justify-between px-6 py-4 hover:bg-slate-50">
+                    <a href="{{ route('review.read', ['organization_id' => $profile->organization_id ?? $profile->id]) }}"
+                        class="flex w-full items-center justify-between px-6 py-4 hover:bg-slate-50">
                         <span class="flex items-center gap-3">
                             <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-xs text-slate-600">
-                                🔔
+                                ⭐
                             </span>
-                            Notifikasi
+                            Review masuk
                         </span>
-                        <span class="text-xs text-slate-400">Kelola preferensi</span>
-                    </button>
-                    <button type="button" class="flex w-full items-center justify-between px-6 py-4 hover:bg-slate-50">
-                        <span class="flex items-center gap-3">
-                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-xs text-slate-600">
-                                🔒
-                            </span>
-                            Keamanan
+                        <span class="text-xs text-slate-400">Klik untuk melihat</span>
+                    </a>
+                    <button type="button" class="flex w-full items-center justify-between px-6 py-4 hover:bg-rose-50" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))">
+                        <span class="flex items-center gap-3 text-sm font-semibold text-rose-600">
+                            🚪 Keluar
                         </span>
-                        <span class="text-xs text-slate-400">Ubah password</span>
-                    </button>
-                    <form action="{{ route('logout') }}" method="POST"
-                        class="flex items-center justify-between px-6 py-4 hover:bg-rose-50">
-                        @csrf
-                        <button type="submit" class="flex items-center gap-3 text-sm font-semibold text-rose-600">
-                            Keluar
-                        </button>
                         <span class="text-xs text-rose-400">Sesi saat ini</span>
-                    </form>
+                    </button>
                 </div>
             </div>
 
@@ -186,5 +183,49 @@
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalOverlay = document.getElementById('logout-modal-overlay');
+            const cancelButton = document.getElementById('logout-cancel');
+            const confirmButton = document.getElementById('logout-confirm');
+
+            window.addEventListener('open-logout-modal', () => {
+                modalOverlay.classList.remove('hidden');
+                modalOverlay.classList.add('flex');
+            });
+
+            cancelButton?.addEventListener('click', () => {
+                modalOverlay.classList.add('hidden');
+                modalOverlay.classList.remove('flex');
+            });
+
+            confirmButton?.addEventListener('click', () => {
+                document.getElementById('logout-form').submit();
+            });
+        });
+    </script>
+
+    <div id="logout-modal-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 px-4">
+        <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 class="text-lg font-semibold text-slate-900">Yakin ingin keluar?</h3>
+            <p class="mt-2 text-sm text-slate-500">Sesi kamu akan diakhiri dan perlu login ulang untuk kembali.</p>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="logout-cancel" type="button"
+                    class="rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                    Batal
+                </button>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button id="logout-confirm" type="button"
+                        class="rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-rose-200 hover:bg-rose-600">
+                        Ya, keluar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endpush
 
 

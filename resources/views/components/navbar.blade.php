@@ -11,11 +11,13 @@
                 @php
                     $isInventoryPage = request()->routeIs('inventory.index');
                     $isPostItemPage = request()->routeIs('post-item.create');
+                    $isChatPage = request()->routeIs('chat.*');
+                    $isProfilePage = request()->routeIs('profile.*');
                 @endphp
-                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
+                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage && ! $isChatPage && ! $isProfilePage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
                 <a href="{{ route('post-item.create') }}" class="{{ $isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Post Item</a>
-                <a href="#" class="text-gray-500 hover:text-gray-900 transition duration-150">Messages</a>
-                <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Profile</a>
+                <a href="{{ route('chat.index') }}" class="{{ $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Messages</a>
+                <a href="{{ route('profile.index') }}" class="{{ $isProfilePage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Profile</a>
             </nav>
 
             <div class="flex items-center space-x-3">

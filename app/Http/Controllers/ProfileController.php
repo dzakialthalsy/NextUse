@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -44,7 +45,21 @@ class ProfileController extends Controller
 
         $this->authorizeProfile($request, $profile);
 
-        $data = $this->validatedData($request);
+        $data = $this->validatedData($request, $profile);
+
+        if ($request->hasFile('avatar')) {
+            $avatarFile = $request->file('avatar');
+            $avatarName = time() . '_' . $avatarFile->getClientOriginalName();
+            $avatarPath = public_path('images/profile');
+            
+            // Buat folder jika belum ada
+            if (!file_exists($avatarPath)) {
+                mkdir($avatarPath, 0755, true);
+            }
+            
+            $avatarFile->move($avatarPath, $avatarName);
+            $data['avatar_url'] = '/images/profile/' . $avatarName;
+        }
 
         $profile->update($data);
 
@@ -96,7 +111,7 @@ class ProfileController extends Controller
         abort_unless($profile->organization_id === $organizationId, 403);
     }
 
-    protected function validatedData(Request $request): array
+    protected function validatedData(Request $request, ?Profile $profile = null): array
     {
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:120'],
@@ -112,7 +127,8 @@ class ProfileController extends Controller
             'response_time' => ['nullable', 'string', 'max:100'],
             'skills_text' => ['nullable', 'string'],
             'categories_text' => ['nullable', 'string'],
-            'avatar_url' => ['nullable', 'url'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
+            'avatar_url' => ['nullable', 'string', 'max:255'],
             'cover_url' => ['nullable', 'url'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:50'],
@@ -127,25 +143,25 @@ class ProfileController extends Controller
             'headline' => $validated['headline'] ?? null,
             'bio' => $validated['bio'] ?? null,
             'location' => $validated['location'] ?? null,
-            'availability_status' => $validated['availability_status'] ?? null,
-            'rating' => $validated['rating'] ?? 4.9,
-            'completed_deals' => $validated['completed_deals'] ?? 0,
-            'followers_count' => $validated['followers_count'] ?? 0,
-            'following_count' => $validated['following_count'] ?? 0,
-            'response_rate' => $validated['response_rate'] ?? 98,
-            'response_time' => $validated['response_time'] ?? 'Dalam 1 jam',
-            'skills' => $this->explodeList($validated['skills_text'] ?? ''),
-            'favorite_categories' => $this->explodeList($validated['categories_text'] ?? ''),
-            'avatar_url' => $validated['avatar_url'] ?? null,
-            'cover_url' => $validated['cover_url'] ?? null,
-            'contact_email' => $validated['contact_email'] ?? null,
-            'contact_phone' => $validated['contact_phone'] ?? null,
-            'portfolio_url' => $validated['portfolio_url'] ?? null,
+            'availability_status' => $validated['availability_status'] ?? $profile?->availability_status ?? 'Tersedia untuk berkolaborasi',
+            'rating' => $validated['rating'] ?? $profile?->rating ?? 4.9,
+            'completed_deals' => $validated['completed_deals'] ?? $profile?->completed_deals ?? 0,
+            'followers_count' => $validated['followers_count'] ?? $profile?->followers_count ?? 0,
+            'following_count' => $validated['following_count'] ?? $profile?->following_count ?? 0,
+            'response_rate' => $validated['response_rate'] ?? $profile?->response_rate ?? 98,
+            'response_time' => $validated['response_time'] ?? $profile?->response_time ?? 'Dalam 1 jam',
+            'skills' => $this->explodeList($validated['skills_text'] ?? '') ?: ($profile?->skills ?? []),
+            'favorite_categories' => $this->explodeList($validated['categories_text'] ?? '') ?: ($profile?->favorite_categories ?? []),
+            'avatar_url' => $validated['avatar_url'] ?? $profile?->avatar_url ?? null,
+            'cover_url' => $validated['cover_url'] ?? $profile?->cover_url ?? null,
+            'contact_email' => $validated['contact_email'] ?? $profile?->contact_email ?? null,
+            'contact_phone' => $validated['contact_phone'] ?? $profile?->contact_phone ?? null,
+            'portfolio_url' => $validated['portfolio_url'] ?? $profile?->portfolio_url ?? null,
             'social_links' => array_filter([
-                'instagram' => $validated['instagram_url'] ?? null,
-                'tiktok' => $validated['tiktok_url'] ?? null,
-            ]),
-            'joined_at' => $validated['joined_at'] ?? null,
+                'instagram' => $validated['instagram_url'] ?? ($profile?->social_links['instagram'] ?? null),
+                'tiktok' => $validated['tiktok_url'] ?? ($profile?->social_links['tiktok'] ?? null),
+            ]) ?: ($profile?->social_links ?? []),
+            'joined_at' => $validated['joined_at'] ?? ($profile?->joined_at?->format('Y-m-d') ?? null),
         ];
     }
 

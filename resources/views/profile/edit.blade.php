@@ -24,7 +24,7 @@
         @endif
 
         <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
-            <form action="{{ route('profile.update', $profile) }}" method="POST" class="space-y-6">
+            <form action="{{ route('profile.update', $profile) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -34,15 +34,18 @@
                         <p class="text-xs text-slate-500">Seret &amp; lepas atau klik untuk pilih (JPG/PNG maks. 2MB).</p>
                     </div>
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <div
-                            class="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-2xl font-semibold text-white">
-                            {{ strtoupper(mb_substr($profile->full_name, 0, 1)) }}
+                        <div class="relative">
+                            <img src="{{ $profile->avatar_url ?? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&w=200&q=80' }}"
+                                alt="Avatar preview"
+                                class="h-16 w-16 rounded-full object-cover ring-2 ring-emerald-200">
+                            <span class="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 px-2 py-1 text-[10px] font-semibold text-white">Baru</span>
                         </div>
-                        <div
-                            class="flex-1 cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-5 text-center text-xs text-slate-500">
-                            <p class="font-medium text-slate-700">Seret &amp; lepas atau klik untuk pilih</p>
+                        <label for="avatar"
+                            class="flex-1 cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-5 text-center text-xs text-slate-500 hover:bg-slate-100">
+                            <p class="font-medium text-slate-700">Klik untuk memilih foto</p>
                             <p>JPG atau PNG (maks. 2MB)</p>
-                        </div>
+                            <input type="file" id="avatar" name="avatar" class="hidden" accept="image/*">
+                        </label>
                     </div>
                 </section>
 

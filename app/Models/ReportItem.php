@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ReportItem extends Model
@@ -27,6 +28,10 @@ class ReportItem extends Model
         'admin_notes',
         'reviewed_at',
         'reviewed_by',
+        'decision',
+        'action',
+        'reject_reason',
+        'action_note',
     ];
 
     /**
@@ -53,5 +58,13 @@ class ReportItem extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'reviewed_by');
+    }
+
+    /**
+     * Get all moderation history for this report.
+     */
+    public function moderationHistory(): MorphMany
+    {
+        return $this->morphMany(ModerationHistory::class, 'reportable');
     }
 }

@@ -485,6 +485,9 @@
             const form = document.getElementById('itemForm');
             const formData = new FormData(form);
             
+            // Remove setuju_kebijakan from draft save
+            formData.delete('setuju_kebijakan');
+            
             fetch('{{ route("post-item.save-draft") }}', {
                 method: 'POST',
                 body: formData,
@@ -494,19 +497,30 @@
                 }
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
-                }
-                return response.json();
+                return response.json().then(data => {
+                    if (!response.ok) {
+                        return Promise.reject(data);
+                    }
+                    return data;
+                });
             })
             .then(data => {
                 if (data.success) {
                     alert('Draft tersimpan');
+                } else {
+                    alert(data.message || 'Gagal menyimpan draft');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Gagal menyimpan draft. Silakan coba lagi.');
+                let errorMessage = 'Gagal menyimpan draft. Silakan coba lagi.';
+                if (error.errors) {
+                    const errorList = Object.values(error.errors).flat().join('\n');
+                    errorMessage = 'Validasi gagal:\n' + errorList;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                alert(errorMessage);
             });
         }
 
