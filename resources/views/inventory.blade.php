@@ -21,6 +21,19 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
     <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+        @if(session('success'))
+            <div id="toast-success" class="fixed top-4 right-4 z-50 bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2" role="alert">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <span>{{ session('success') }}</span>
+            </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('toast-success');
+                    if (toast) { toast.style.opacity = '0'; toast.style.transition = 'opacity 300ms'; }
+                    setTimeout(() => { if (toast) toast.remove(); }, 400);
+                }, 2200);
+            </script>
+        @endif
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="flex items-center flex-wrap gap-3">
                 <span class="px-3 py-1 rounded-full bg-gray-100 text-xs font-medium text-gray-700">
@@ -128,7 +141,7 @@
                         </div>
                     </div>
                     <div class="px-5 pb-5 flex gap-2">
-                        <a href="{{ route('post-item.create', ['item' => $item->id]) }}" class="flex-1 text-center text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition">
+                        <a href="{{ route('items.edit', $item->id) }}" class="flex-1 text-center text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition">
                             Edit
                         </a>
                         <form action="{{ route('items.destroy', $item) }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus barang ini?')">

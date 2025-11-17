@@ -57,18 +57,18 @@ class ItemController extends Controller
     public function edit(Request $request, $id)
     {
         if (!$request->session()->has('organization_id')) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            return redirect()->route('login');
         }
         
         $organizationId = $request->session()->get('organization_id');
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
-        return response()->json($item);
+        return view('edit', compact('item'));
     }
 
     public function update(Request $request, $id)
     {
         if (!$request->session()->has('organization_id')) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            return redirect()->route('login');
         }
         
         $organizationId = $request->session()->get('organization_id');
@@ -81,6 +81,8 @@ class ItemController extends Controller
             'deskripsi' => 'required|string|min:30',
             'lokasi' => 'required|string|max:255',
             'status' => 'nullable|in:tersedia,reserved,habis',
+            'preferensi' => 'nullable|array',
+            'preferensi.*' => 'in:giveaway,barter',
             'foto_barang' => 'nullable|array|max:8',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
             'foto_barang_old' => 'nullable|array',
@@ -88,7 +90,7 @@ class ItemController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            return back()->withErrors($validator)->withInput();
         }
 
         $fotoPaths = $request->foto_barang_old ?? [];
@@ -106,16 +108,17 @@ class ItemController extends Controller
             'deskripsi' => $request->deskripsi,
             'lokasi' => $request->lokasi,
             'status' => $request->status ?? $item->status,
+            'preferensi' => $request->preferensi ?? [],
             'foto_barang' => $fotoPaths,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Barang berhasil diperbarui', 'item' => $item]);
+        return redirect()->route('inventory.index')->with('success', 'Barang berhasil diperbarui');
     }
 
     public function destroy(Request $request, $id)
     {
         if (!$request->session()->has('organization_id')) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            return redirect()->route('login');
         }
         
         $organizationId = $request->session()->get('organization_id');
@@ -130,7 +133,7 @@ class ItemController extends Controller
         }
 
         $item->delete();
-        return response()->json(['success' => true, 'message' => 'Barang berhasil dihapus']);
+        return redirect()->route('inventory.index')->with('success', 'Barang sudah terhapus');
     }
 
     public function updateStatus(Request $request)

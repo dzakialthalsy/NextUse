@@ -42,6 +42,14 @@
                 <!-- Main Form -->
                 <div class="col-span-12 lg:col-span-7">
                     <div class="max-w-[640px]">
+                        @php
+                            $editing = isset($item);
+                            $oldPreferensi = old('preferensi', $editing ? ($item->preferensi ?? []) : []);
+                            if (! is_array($oldPreferensi)) {
+                                $oldPreferensi = [];
+                            }
+                            $existingPhotos = $editing && is_array($item->foto_barang) ? $item->foto_barang : [];
+                        @endphp
                         <!-- Header -->
                         <div class="mb-8">
                             <h1 class="text-3xl font-semibold mb-2 text-gray-900">
@@ -60,14 +68,6 @@
                         @endif
 
                         <!-- Form -->
-                        @php
-                            $editing = isset($item);
-                            $oldPreferensi = old('preferensi', $editing ? ($item->preferensi ?? []) : []);
-                            if (! is_array($oldPreferensi)) {
-                                $oldPreferensi = [];
-                            }
-                            $existingPhotos = $editing && is_array($item->foto_barang) ? $item->foto_barang : [];
-                        @endphp
 
                         <form action="{{ route('post-item.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="itemForm">
                             @csrf
