@@ -13,8 +13,12 @@ class PostItemController extends Controller
     /**
      * Menampilkan form untuk posting barang baru.
      */
-    public function create()
+    public function create(Request $request)
     {
+        if (!$request->session()->has('organization_id')) {
+            return redirect()->route('login');
+        }
+        
         return view('posting-item');
     }
 
@@ -23,6 +27,16 @@ class PostItemController extends Controller
      */
     public function store(Request $request)
     {
+        // Pastikan organization_id ada di session
+        $organizationId = $request->session()->get('organization_id');
+        if (empty($organizationId) || !is_numeric($organizationId)) {
+            return redirect()->route('login')
+                ->withErrors(['error' => 'Anda harus login terlebih dahulu.']);
+        }
+        
+        // Convert ke integer untuk memastikan tipe data benar
+        $organizationId = (int) $organizationId;
+        
         $validator = Validator::make($request->all(), [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|in:Elektronik,Perabotan,Pakaian,Buku & Alat Tulis,Mainan & Hobi,Olahraga,Dapur,Lainnya',
@@ -62,31 +76,43 @@ class PostItemController extends Controller
         $fotoPaths = [];
         if ($request->hasFile('foto_barang')) {
             foreach ($request->file('foto_barang') as $foto) {
-                $path = $foto->store('items', 'public');
-                $fotoPaths[] = $path;
+                if ($foto->isValid()) {
+                    $path = $foto->store('items', 'public');
+                    $fotoPaths[] = $path;
+                }
             }
         }
 
-        // Get organization ID from session
-        $organizationId = $request->session()->get('organization_id');
-        if (!$organizationId) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        if (empty($fotoPaths)) {
+            return back()
+                ->withErrors(['foto_barang' => 'Minimal 1 foto wajib diunggah dan valid'])
+                ->withInput();
         }
 
-        // Simpan item
-        $item = Item::create([
-            'organization_id' => $organizationId,
-            'judul' => $request->judul,
-            'kategori' => $request->kategori,
-            'kondisi' => $request->kondisi,
-            'deskripsi' => $request->deskripsi,
-            'lokasi' => $request->lokasi,
-            'status' => $request->status ?? 'tersedia',
-            'preferensi' => $request->preferensi ?? [],
-            'catatan_pengambilan' => $request->catatan_pengambilan,
-            'foto_barang' => $fotoPaths,
-            'is_draft' => false,
-        ]);
+        $preferensi = null;
+        if ($request->has('preferensi') && is_array($request->preferensi) && count($request->preferensi) > 0) {
+            $preferensi = $request->preferensi;
+        }
+
+        $organizationId = (int) $request->session()->get('organization_id');
+        if ($organizationId <= 0) {
+            return redirect()->route('login')
+                ->withErrors(['error' => 'Session tidak valid. Silakan login kembali.']);
+        }
+
+        $item = new Item();
+        $item->organization_id = $organizationId;
+        $item->judul = $request->judul;
+        $item->kategori = $request->kategori;
+        $item->kondisi = $request->kondisi;
+        $item->deskripsi = $request->deskripsi;
+        $item->lokasi = $request->lokasi;
+        $item->status = $request->status ?? 'tersedia';
+        $item->preferensi = $preferensi;
+        $item->catatan_pengambilan = $request->catatan_pengambilan;
+        $item->foto_barang = $fotoPaths;
+        $item->is_draft = false;
+        $item->save();
 
         return redirect()->route('inventory.index')
             ->with('success', 'Postingan berhasil diterbitkan');
@@ -97,6 +123,15 @@ class PostItemController extends Controller
      */
     public function saveDraft(Request $request)
     {
+        // Pastikan organization_id ada di session
+        $organizationId = $request->session()->get('organization_id');
+        if (empty($organizationId) || !is_numeric($organizationId)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        // Convert ke integer untuk memastikan tipe data benar
+        $organizationId = (int) $organizationId;
+        
         $validator = Validator::make($request->all(), [
             'judul' => 'nullable|string|max:255',
             'kategori' => 'nullable|in:Elektronik,Perabotan,Pakaian,Buku & Alat Tulis,Mainan & Hobi,Olahraga,Dapur,Lainnya',
@@ -112,40 +147,50 @@ class PostItemController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         // Upload foto jika ada
         $fotoPaths = [];
         if ($request->hasFile('foto_barang')) {
             foreach ($request->file('foto_barang') as $foto) {
-                $path = $foto->store('items', 'public');
-                $fotoPaths[] = $path;
+                if ($foto->isValid()) {
+                    $path = $foto->store('items', 'public');
+                    $fotoPaths[] = $path;
+                }
             }
         }
 
-        // Get organization ID from session
-        $organizationId = $request->session()->get('organization_id');
-        if (!$organizationId) {
-            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu.'], 401);
+        $preferensi = null;
+        if ($request->has('preferensi') && is_array($request->preferensi) && count($request->preferensi) > 0) {
+            $preferensi = $request->preferensi;
         }
 
-        // Simpan draft
-        $item = Item::create([
-            'organization_id' => $organizationId,
-            'judul' => $request->judul ?? '',
-            'kategori' => $request->kategori ?? 'Lainnya',
-            'kondisi' => $request->kondisi ?? 'bekas',
-            'deskripsi' => $request->deskripsi ?? '',
-            'lokasi' => $request->lokasi ?? '',
-            'status' => $request->status ?? 'tersedia',
-            'preferensi' => $request->preferensi ?? [],
-            'catatan_pengambilan' => $request->catatan_pengambilan,
-            'foto_barang' => $fotoPaths,
-            'is_draft' => true,
-        ]);
+        $organizationId = (int) $request->session()->get('organization_id');
+        if ($organizationId <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session tidak valid. Silakan login kembali.'
+            ], 401);
+        }
+
+        $item = new Item();
+        $item->organization_id = $organizationId;
+        $item->judul = $request->judul ?? '';
+        $item->kategori = $request->kategori ?? 'Lainnya';
+        $item->kondisi = $request->kondisi ?? 'bekas';
+        $item->deskripsi = $request->deskripsi ?? '';
+        $item->lokasi = $request->lokasi ?? '';
+        $item->status = $request->status ?? 'tersedia';
+        $item->preferensi = $preferensi;
+        $item->catatan_pengambilan = $request->catatan_pengambilan;
+        $item->foto_barang = $fotoPaths;
+        $item->is_draft = true;
+        $item->save();
 
         return response()->json(['success' => true, 'message' => 'Draft tersimpan']);
     }

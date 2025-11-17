@@ -9,21 +9,25 @@ use Illuminate\Support\Facades\Validator;
 
 class ItemController extends Controller
 {
-    /**
-     * Menampilkan daftar barang pengguna (Inventori Saya).
-     */
     public function index(Request $request)
     {
+<<<<<<< HEAD
         $organizationId = $request->session()->get('organization_id');
         
         if (!$organizationId) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
+=======
+        if (!$request->session()->has('organization_id')) {
+            return redirect()->route('login');
+        }
+        
+        $organizationId = $request->session()->get('organization_id');
+>>>>>>> 3cd9c03 (Normalize line endings)
         $query = Item::where('organization_id', $organizationId)
             ->where('is_draft', false);
 
-        // Search
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -32,17 +36,14 @@ class ItemController extends Controller
             });
         }
 
-        // Filter kategori
         if ($request->has('kategori') && $request->kategori !== 'semua') {
             $query->where('kategori', $request->kategori);
         }
 
-        // Filter status
         if ($request->has('status') && $request->status !== 'semua') {
             $query->where('status', $request->status);
         }
 
-        // Sort
         $sortBy = $request->get('sort', 'tanggal-desc');
         switch ($sortBy) {
             case 'tanggal-asc':
@@ -60,10 +61,10 @@ class ItemController extends Controller
         }
 
         $items = $query->paginate(10);
-
         return view('inventory', compact('items'));
     }
 
+<<<<<<< HEAD
     /**
      * Menampilkan form edit barang.
      */
@@ -75,21 +76,35 @@ class ItemController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+=======
+    public function edit(Request $request, $id)
+    {
+        if (!$request->session()->has('organization_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        $organizationId = $request->session()->get('organization_id');
+>>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         return response()->json($item);
     }
 
-    /**
-     * Update barang.
-     */
     public function update(Request $request, $id)
     {
+<<<<<<< HEAD
         $organizationId = $request->session()->get('organization_id');
         
         if (!$organizationId) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+=======
+        if (!$request->session()->has('organization_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        $organizationId = $request->session()->get('organization_id');
+>>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -103,28 +118,13 @@ class ItemController extends Controller
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
             'foto_barang_old' => 'nullable|array',
             'foto_barang_old.*' => 'string',
-        ], [
-            'judul.required' => 'Judul barang wajib diisi',
-            'kategori.required' => 'Kategori wajib dipilih',
-            'kondisi.required' => 'Kondisi barang wajib dipilih',
-            'deskripsi.required' => 'Deskripsi wajib diisi',
-            'deskripsi.min' => 'Deskripsi minimal 30 karakter',
-            'lokasi.required' => 'Lokasi wajib diisi',
-            'foto_barang.max' => 'Maksimal 8 foto',
-            'foto_barang.*.image' => 'File harus berupa gambar',
-            'foto_barang.*.max' => 'Ukuran file maksimal 5MB',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        // Handle foto upload
         $fotoPaths = $request->foto_barang_old ?? [];
-        
         if ($request->hasFile('foto_barang')) {
             foreach ($request->file('foto_barang') as $foto) {
                 $path = $foto->store('items', 'public');
@@ -132,7 +132,6 @@ class ItemController extends Controller
             }
         }
 
-        // Update item
         $item->update([
             'judul' => $request->judul,
             'kategori' => $request->kategori,
@@ -143,13 +142,10 @@ class ItemController extends Controller
             'foto_barang' => $fotoPaths,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Barang berhasil diperbarui',
-            'item' => $item
-        ]);
+        return response()->json(['success' => true, 'message' => 'Barang berhasil diperbarui', 'item' => $item]);
     }
 
+<<<<<<< HEAD
     /**
      * Hapus barang.
      */
@@ -161,9 +157,17 @@ class ItemController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+=======
+    public function destroy(Request $request, $id)
+    {
+        if (!$request->session()->has('organization_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
+        $organizationId = $request->session()->get('organization_id');
+>>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         
-        // Hapus foto dari storage
         if ($item->foto_barang) {
             foreach ($item->foto_barang as $foto) {
                 if (Storage::disk('public')->exists($foto)) {
@@ -173,18 +177,15 @@ class ItemController extends Controller
         }
 
         $item->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Barang berhasil dihapus'
-        ]);
+        return response()->json(['success' => true, 'message' => 'Barang berhasil dihapus']);
     }
 
-    /**
-     * Update status barang (single atau bulk).
-     */
     public function updateStatus(Request $request)
     {
+        if (!$request->session()->has('organization_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
         $validator = Validator::make($request->all(), [
             'item_ids' => 'required|array',
             'item_ids.*' => 'exists:items,id',
@@ -192,57 +193,53 @@ class ItemController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $organizationId = $request->session()->get('organization_id');
+<<<<<<< HEAD
         
         if (!$organizationId) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+=======
+>>>>>>> 3cd9c03 (Normalize line endings)
         $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->update(['status' => $request->status]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Status berhasil diubah',
-            'count' => $items
-        ]);
+        return response()->json(['success' => true, 'message' => 'Status berhasil diubah', 'count' => $items]);
     }
 
-    /**
-     * Bulk delete barang.
-     */
     public function bulkDestroy(Request $request)
     {
+        if (!$request->session()->has('organization_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+        
         $validator = Validator::make($request->all(), [
             'item_ids' => 'required|array',
             'item_ids.*' => 'exists:items,id',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $organizationId = $request->session()->get('organization_id');
+<<<<<<< HEAD
         
         if (!$organizationId) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+=======
+>>>>>>> 3cd9c03 (Normalize line endings)
         $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->get();
 
-        // Hapus foto dari storage
         foreach ($items as $item) {
             if ($item->foto_barang) {
                 foreach ($item->foto_barang as $foto) {
@@ -257,10 +254,6 @@ class ItemController extends Controller
             ->whereIn('id', $request->item_ids)
             ->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => count($items) . ' barang berhasil dihapus',
-            'count' => count($items)
-        ]);
+        return response()->json(['success' => true, 'message' => count($items) . ' barang berhasil dihapus', 'count' => count($items)]);
     }
 }
