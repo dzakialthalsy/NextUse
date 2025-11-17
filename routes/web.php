@@ -13,6 +13,7 @@ use App\Http\Controllers\CreateReviewController;
 use App\Http\Controllers\ReadReviewController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\MengelolaDataBarangController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -60,3 +61,9 @@ Route::get('/admin/review/{type}/{id}', [AdminReviewController::class, 'show'])-
 Route::put('/admin/review/{type}/{id}', [AdminReviewController::class, 'update'])->name('admin.review.update');
 Route::get('/dukung-nextuse', [DonationController::class, 'index'])->name('dukung-nextuse');
 Route::post('/dukung-nextuse', [DonationController::class, 'store'])->name('dukung-nextuse.store');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/mengelola-data-barang', [MengelolaDataBarangController::class, 'index'])->name('mengelola-data.index');
+    Route::delete('/mengelola-data-barang/users/{organization}', [MengelolaDataBarangController::class, 'destroyUser'])->name('mengelola-data.users.destroy');
+    Route::delete('/mengelola-data-barang/items/{item}', [MengelolaDataBarangController::class, 'destroyItem'])->name('mengelola-data.items.destroy');
+});
