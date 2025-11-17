@@ -40,6 +40,7 @@ Route::put('/items/{id}', [ItemController::class, 'update'])->name('items.update
 Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
 Route::post('/items/update-status', [ItemController::class, 'updateStatus'])->name('items.update-status');
 Route::post('/items/bulk-delete', [ItemController::class, 'bulkDestroy'])->name('items.bulk-delete');
+Route::get('/items/{id}', [ItemController::class, 'show'])->name('items.show');
 
 Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
 Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');

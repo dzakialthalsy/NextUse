@@ -67,11 +67,12 @@
         </div>
         <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
             @forelse ($products as $product)
-                <div class="product-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition duration-300" 
-                     data-condition="{{ $product['condition'] }}" 
-                     data-category="{{ $product['category'] }}" 
-                     data-price="{{ $product['price'] }}"
-                     data-time="{{ now()->timestamp }}">
+                <a href="{{ route('items.show', $product['id']) }}"
+                   class="block product-item bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition duration-300"
+                   data-condition="{{ $product['condition'] }}"
+                   data-category="{{ $product['category'] }}"
+                   data-price="{{ $product['price'] }}"
+                   data-time="{{ now()->timestamp }}">
                     
                     <div class="relative {{ $product['img_class'] ?? 'h-56' }} product-image-bg flex items-center justify-center overflow-hidden">
                         @if(!empty($product['foto_barang']) && is_array($product['foto_barang']) && count($product['foto_barang']) > 0)
@@ -107,7 +108,7 @@
                             <p class="font-normal">{{ $product['location'] }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="col-span-full text-center py-12">
                     <h2 class="text-lg font-semibold text-gray-700 mb-2">Belum ada barang yang sesuai</h2>

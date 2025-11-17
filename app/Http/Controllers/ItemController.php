@@ -197,4 +197,18 @@ class ItemController extends Controller
 
         return response()->json(['success' => true, 'message' => count($items) . ' barang berhasil dihapus', 'count' => count($items)]);
     }
+
+    /**
+     * Menampilkan detail barang.
+     */
+    public function show($id)
+    {
+        $item = Item::with('organization')
+            ->where('is_draft', false)
+            ->findOrFail($id);
+
+        return view('detail-barang', [
+            'item' => $item,
+        ]);
+    }
 }
