@@ -1,14 +1,16 @@
 <?php
 
+use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PostItemController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\ReportItemController;
+use App\Http\Controllers\ReportUserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SyaratKetentuanController;
-use App\Http\Controllers\ReportUserController;
-use App\Http\Controllers\ReportItemController;
-use App\Http\Controllers\PostItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -38,3 +40,18 @@ Route::post('/report-item', [ReportItemController::class, 'store'])->name('repor
 Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
 Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');
 Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->name('post-item.save-draft');
+
+Route::controller(ChatMessageController::class)->group(function () {
+    Route::get('/chat', 'index')->name('chat.index');
+    Route::post('/chat/messages', 'store')->name('chat.store');
+    Route::get('/chat/messages/{chatMessage}/edit', 'edit')->name('chat.edit');
+    Route::put('/chat/messages/{chatMessage}', 'update')->name('chat.update');
+    Route::delete('/chat/messages/{chatMessage}', 'destroy')->name('chat.destroy');
+});
+
+Route::controller(ProfileController::class)->group(function () {
+    Route::get('/profile', 'index')->name('profile.index');
+    Route::get('/profile/{profile}/edit', 'edit')->name('profile.edit');
+    Route::put('/profile/{profile}', 'update')->name('profile.update');
+    Route::delete('/profile/{profile}', 'destroy')->name('profile.destroy');
+});
