@@ -11,20 +11,11 @@ class ItemController extends Controller
 {
     public function index(Request $request)
     {
-<<<<<<< HEAD
-        $organizationId = $request->session()->get('organization_id');
-        
-        if (!$organizationId) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-=======
         if (!$request->session()->has('organization_id')) {
             return redirect()->route('login');
         }
         
         $organizationId = $request->session()->get('organization_id');
->>>>>>> 3cd9c03 (Normalize line endings)
         $query = Item::where('organization_id', $organizationId)
             ->where('is_draft', false);
 
@@ -63,20 +54,6 @@ class ItemController extends Controller
         $items = $query->paginate(10);
         return view('inventory', compact('items'));
     }
-
-<<<<<<< HEAD
-    /**
-     * Menampilkan form edit barang.
-     */
-    public function edit(Request $request, $id)
-    {
-        $organizationId = $request->session()->get('organization_id');
-        
-        if (!$organizationId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-=======
     public function edit(Request $request, $id)
     {
         if (!$request->session()->has('organization_id')) {
@@ -84,27 +61,17 @@ class ItemController extends Controller
         }
         
         $organizationId = $request->session()->get('organization_id');
->>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         return response()->json($item);
     }
 
     public function update(Request $request, $id)
     {
-<<<<<<< HEAD
-        $organizationId = $request->session()->get('organization_id');
-        
-        if (!$organizationId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-=======
         if (!$request->session()->has('organization_id')) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
         
         $organizationId = $request->session()->get('organization_id');
->>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -145,19 +112,6 @@ class ItemController extends Controller
         return response()->json(['success' => true, 'message' => 'Barang berhasil diperbarui', 'item' => $item]);
     }
 
-<<<<<<< HEAD
-    /**
-     * Hapus barang.
-     */
-    public function destroy(Request $request, $id)
-    {
-        $organizationId = $request->session()->get('organization_id');
-        
-        if (!$organizationId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-=======
     public function destroy(Request $request, $id)
     {
         if (!$request->session()->has('organization_id')) {
@@ -165,7 +119,6 @@ class ItemController extends Controller
         }
         
         $organizationId = $request->session()->get('organization_id');
->>>>>>> 3cd9c03 (Normalize line endings)
         $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         
         if ($item->foto_barang) {
@@ -197,14 +150,7 @@ class ItemController extends Controller
         }
 
         $organizationId = $request->session()->get('organization_id');
-<<<<<<< HEAD
-        
-        if (!$organizationId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
-=======
->>>>>>> 3cd9c03 (Normalize line endings)
         $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->update(['status' => $request->status]);
@@ -228,14 +174,6 @@ class ItemController extends Controller
         }
 
         $organizationId = $request->session()->get('organization_id');
-<<<<<<< HEAD
-        
-        if (!$organizationId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-=======
->>>>>>> 3cd9c03 (Normalize line endings)
         $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->get();
