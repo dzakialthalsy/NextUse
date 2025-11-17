@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportItemController;
 use App\Http\Controllers\PostItemController;
 use App\Http\Controllers\CreateReviewController;
 use App\Http\Controllers\ReadReviewController;
+use App\Http\Controllers\AdminReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -44,3 +45,6 @@ Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->
 Route::get('/review/create', [CreateReviewController::class, 'create'])->name('review.create');
 Route::post('/review/create', [CreateReviewController::class, 'store'])->name('review.create.store');
 Route::get('/review', [ReadReviewController::class, 'show'])->name('review.read');
+
+Route::get('/admin/review/{type}/{id}', [AdminReviewController::class, 'show'])->name('admin.review.show');
+Route::put('/admin/review/{type}/{id}', [AdminReviewController::class, 'update'])->name('admin.review.update');
