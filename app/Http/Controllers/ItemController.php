@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,7 +14,13 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Item::where('user_id', Auth::id())
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $query = Item::where('organization_id', $organizationId)
             ->where('is_draft', false);
 
         // Search
@@ -62,9 +67,15 @@ class ItemController extends Controller
     /**
      * Menampilkan form edit barang.
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        $item = Item::where('user_id', Auth::id())->findOrFail($id);
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         return response()->json($item);
     }
 
@@ -73,7 +84,13 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $item = Item::where('user_id', Auth::id())->findOrFail($id);
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $item = Item::where('organization_id', $organizationId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'judul' => 'required|string|max:255',
@@ -136,9 +153,15 @@ class ItemController extends Controller
     /**
      * Hapus barang.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $item = Item::where('user_id', Auth::id())->findOrFail($id);
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $item = Item::where('organization_id', $organizationId)->findOrFail($id);
         
         // Hapus foto dari storage
         if ($item->foto_barang) {
@@ -175,7 +198,13 @@ class ItemController extends Controller
             ], 422);
         }
 
-        $items = Item::where('user_id', Auth::id())
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->update(['status' => $request->status]);
 
@@ -203,7 +232,13 @@ class ItemController extends Controller
             ], 422);
         }
 
-        $items = Item::where('user_id', Auth::id())
+        $organizationId = $request->session()->get('organization_id');
+        
+        if (!$organizationId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $items = Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->get();
 
@@ -218,7 +253,7 @@ class ItemController extends Controller
             }
         }
 
-        Item::where('user_id', Auth::id())
+        Item::where('organization_id', $organizationId)
             ->whereIn('id', $request->item_ids)
             ->delete();
 
