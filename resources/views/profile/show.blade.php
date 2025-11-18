@@ -72,12 +72,14 @@
                     </div>
                 </div>
 
+            @if (\Illuminate\Support\Facades\Schema::hasTable('profiles') && $profile->exists)
                 <div class="flex items-start gap-3">
                     <a href="{{ route('profile.edit', $profile) }}"
                         class="inline-flex items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                         Edit Profil
                     </a>
                 </div>
+            @endif
             </div>
 
             <div class="border-t border-slate-100 px-6 py-5">
