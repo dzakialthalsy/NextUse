@@ -12,12 +12,11 @@
                     $isInventoryPage = request()->routeIs('inventory.index');
                     $isPostItemPage = request()->routeIs('post-item.create');
                     $isChatPage = request()->routeIs('chat.*');
-                    $isProfilePage = request()->routeIs('profile.*');
                 @endphp
-                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage && ! $isChatPage && ! $isProfilePage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
+                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage && ! $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
+                <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Inventory</a>
                 <a href="{{ route('post-item.create') }}" class="{{ $isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Post Item</a>
                 <a href="{{ route('chat.index') }}" class="{{ $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Messages</a>
-                <a href="{{ route('profile.index') }}" class="{{ $isProfilePage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Profile</a>
             </nav>
 
             <div class="flex items-center space-x-3">
@@ -27,9 +26,9 @@
                     </svg>
                     <span class="absolute top-1 right-1 block w-2 h-2 bg-red-600 rounded-full"></span>
                 </button>
-                <div class="w-8 h-8 rounded-full main-gradient flex items-center justify-center">
+                <a href="{{ route('profile.index') }}" class="w-8 h-8 rounded-full main-gradient flex items-center justify-center">
                     <svg class="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                </div>
+                </a>
             </div>
         </div>
     </header>
