@@ -76,7 +76,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Dibagikan oleh</p>
-                                <a href="{{ route('profile.index') }}"
+                                <a href="{{ route('seller.profile.show', ['organization' => $item->organization_id]) }}"
                                    class="text-lg font-semibold text-gray-900 hover:text-teal-600 transition">
                                     {{ $item->organization->organization_name ?? 'Pengguna NextUse' }}
                                 </a>

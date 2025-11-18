@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\Profile;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -19,10 +20,20 @@ class PostItemController extends Controller
             return redirect()->route('login');
         }
 
+        $organizationId = (int) $request->session()->get('organization_id');
+
+        $profile = null;
+        if (Schema::hasTable('profiles')) {
+            $profile = Profile::firstOrCreate(
+                ['organization_id' => $organizationId],
+                [
+                    'full_name' => $request->session()->get('organization_name', 'Pengguna NextUse'),
+                ]
+            );
+        }
+
         $editableItem = null;
         if ($request->filled('item')) {
-            $organizationId = (int) $request->session()->get('organization_id');
-
             if ($organizationId <= 0) {
                 return redirect()->route('login');
             }
@@ -39,6 +50,7 @@ class PostItemController extends Controller
         
         return view('posting-item', [
             'item' => $editableItem,
+            'profile' => $profile,
         ]);
     }
 
@@ -170,80 +182,4 @@ class PostItemController extends Controller
             ->with('success', 'Postingan berhasil diterbitkan');
     }
 
-    /**
-     * Menyimpan draft barang.
-     */
-    public function saveDraft(Request $request)
-    {
-        // Pastikan organization_id ada di session
-        $organizationId = $request->session()->get('organization_id');
-        if (empty($organizationId) || !is_numeric($organizationId)) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
-        }
-        
-        // Convert ke integer untuk memastikan tipe data benar
-        $organizationId = (int) $organizationId;
-        
-        $validator = Validator::make($request->all(), [
-            'judul' => 'nullable|string|max:255',
-            'kategori' => 'nullable|in:Elektronik,Perabotan,Pakaian,Buku & Alat Tulis,Mainan & Hobi,Olahraga,Dapur,Lainnya',
-            'kondisi' => 'nullable|in:baru,like-new,bekas',
-            'deskripsi' => 'nullable|string',
-            'lokasi' => 'nullable|string|max:255',
-            'status' => 'nullable|in:tersedia,reserved,habis',
-            'preferensi' => 'nullable|array',
-            'preferensi.*' => 'in:giveaway,barter',
-            'catatan_pengambilan' => 'nullable|string|max:1000',
-            'foto_barang' => 'nullable|array|max:8',
-            'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Upload foto jika ada
-        $fotoPaths = [];
-        if ($request->hasFile('foto_barang')) {
-            foreach ($request->file('foto_barang') as $foto) {
-                if ($foto->isValid()) {
-                    $path = $foto->store('items', 'public');
-                    $fotoPaths[] = $path;
-                }
-            }
-        }
-
-        $preferensi = null;
-        if ($request->has('preferensi') && is_array($request->preferensi) && count($request->preferensi) > 0) {
-            $preferensi = $request->preferensi;
-        }
-
-        $organizationId = (int) $request->session()->get('organization_id');
-        if ($organizationId <= 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Session tidak valid. Silakan login kembali.'
-            ], 401);
-        }
-
-        $item = new Item();
-        $item->organization_id = $organizationId;
-        $item->judul = $request->judul ?? '';
-        $item->kategori = $request->kategori ?? 'Lainnya';
-        $item->kondisi = $request->kondisi ?? 'bekas';
-        $item->deskripsi = $request->deskripsi ?? '';
-        $item->lokasi = $request->lokasi ?? '';
-        $item->status = $request->status ?? 'tersedia';
-        $item->preferensi = $preferensi;
-        $item->catatan_pengambilan = $request->catatan_pengambilan;
-        $item->foto_barang = $fotoPaths;
-        $item->is_draft = true;
-        $item->save();
-
-        return response()->json(['success' => true, 'message' => 'Draft tersimpan']);
-    }
 }
