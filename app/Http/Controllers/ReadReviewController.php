@@ -49,14 +49,6 @@ class ReadReviewController extends Controller
         // Check if current organization is viewing their own reviews
         $currentOrganizationId = $request->session()->get('organization_id');
         $isOwnProfile = $currentOrganizationId && (int)$currentOrganizationId == (int)$organizationId;
-        
-        // Check if current user has already reviewed this organization
-        $hasReviewed = false;
-        if ($currentOrganizationId && !$isOwnProfile) {
-            $hasReviewed = Review::where('reviewer_id', $currentOrganizationId)
-                ->where('reviewed_organization_id', $organizationId)
-                ->exists();
-        }
 
         return view('read-review', [
             'organization' => $organization,
@@ -66,8 +58,6 @@ class ReadReviewController extends Controller
             'ratingDistribution' => $ratingDistribution,
             'transactionCount' => $transactionCount,
             'isOwnProfile' => $isOwnProfile,
-            'currentOrganizationId' => $currentOrganizationId,
-            'hasReviewed' => $hasReviewed,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChatMessage;
+use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -64,8 +65,43 @@ class ChatMessageController extends Controller
             })
             ->values();
 
+        // Handle review prompt when user leaves a conversation
+        $reviewData = null;
+        $fromConversationId = $request->query('from_conversation');
+        
+        if ($fromConversationId) {
+            $conversationMessage = ChatMessage::where('conversation_id', $fromConversationId)
+                ->where(function ($query) use ($organizationId) {
+                    $query->where('buyer_id', $organizationId)
+                        ->orWhere('seller_id', $organizationId);
+                })
+                ->first();
+            
+            if ($conversationMessage) {
+                // Get the other party's organization ID
+                $reviewedOrganizationId = $organizationId === $conversationMessage->seller_id
+                    ? $conversationMessage->buyer_id
+                    : $conversationMessage->seller_id;
+                
+                // Check if user has already reviewed this organization
+                $hasReviewed = Review::where('reviewer_id', $organizationId)
+                    ->where('reviewed_organization_id', $reviewedOrganizationId)
+                    ->exists();
+                
+                if (!$hasReviewed && $reviewedOrganizationId) {
+                    $reviewData = [
+                        'organization_id' => $reviewedOrganizationId,
+                        'organization_name' => $organizationId === $conversationMessage->seller_id
+                            ? $conversationMessage->buyer_name
+                            : $conversationMessage->seller_name,
+                    ];
+                }
+            }
+        }
+
         return view('chat.index', [
             'conversations' => $conversations,
+            'reviewData' => $reviewData,
         ]);
     }
 

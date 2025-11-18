@@ -6,7 +6,7 @@
     <div class="max-w-4xl mx-auto flex flex-col h-[calc(100vh-120px)]">
         {{-- Chat Header --}}
         <div class="flex items-center gap-4 border-b border-slate-200 bg-white px-4 py-4">
-            <a href="{{ route('chat.index') }}" class="flex-shrink-0 text-slate-600 hover:text-slate-900">
+            <a href="{{ route('chat.index', ['from_conversation' => $conversation['id']]) }}" class="flex-shrink-0 text-slate-600 hover:text-slate-900">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
