@@ -17,7 +17,9 @@ use App\Http\Controllers\CreateReviewController;
 use App\Http\Controllers\ReadReviewController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\DonationController;
-use App\Http\Controllers\MengelolaDataBarangController;
+use App\Http\Controllers\Admin\MengelolaDataBarang\DestroyItemController as AdminMengelolaDataBarangDestroyItemController;
+use App\Http\Controllers\Admin\MengelolaDataBarang\DestroyUserController as AdminMengelolaDataBarangDestroyUserController;
+use App\Http\Controllers\Admin\MengelolaDataBarang\IndexController as AdminMengelolaDataBarangIndexController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SearchController::class, 'index'])->name('beranda');
@@ -68,9 +70,9 @@ Route::get('/dukung-nextuse', [DonationController::class, 'index'])->name('dukun
 Route::post('/dukung-nextuse', [DonationController::class, 'store'])->name('dukung-nextuse.store');
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/mengelola-data-barang', [MengelolaDataBarangController::class, 'index'])->name('mengelola-data.index');
-    Route::delete('/mengelola-data-barang/users/{organization}', [MengelolaDataBarangController::class, 'destroyUser'])->name('mengelola-data.users.destroy');
-    Route::delete('/mengelola-data-barang/items/{item}', [MengelolaDataBarangController::class, 'destroyItem'])->name('mengelola-data.items.destroy');
+    Route::get('/mengelola-data-barang', AdminMengelolaDataBarangIndexController::class)->name('mengelola-data.index');
+    Route::delete('/mengelola-data-barang/users/{organization}', AdminMengelolaDataBarangDestroyUserController::class)->name('mengelola-data.users.destroy');
+    Route::delete('/mengelola-data-barang/items/{item}', AdminMengelolaDataBarangDestroyItemController::class)->name('mengelola-data.items.destroy');
 });
 
 // Chat Routes - Read Operations
