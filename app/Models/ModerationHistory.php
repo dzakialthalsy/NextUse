@@ -11,6 +11,8 @@ class ModerationHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'moderation_history';
+
     /**
      * The attributes that are mass assignable.
      *

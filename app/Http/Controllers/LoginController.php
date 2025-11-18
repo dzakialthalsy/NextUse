@@ -16,6 +16,9 @@ class LoginController extends Controller
     public function index(Request $request)
     {
         if ($request->session()->has('organization_id')) {
+            if ($request->session()->get('is_admin') === true) {
+                return redirect()->route('admin.mengelola-data.index');
+            }
             return redirect()->route('beranda');
         }
 
@@ -84,8 +87,14 @@ class LoginController extends Controller
         $request->session()->regenerate();
         $request->session()->put('organization_id', $organization->id);
         $request->session()->put('organization_name', $organization->organization_name);
+        $request->session()->put('is_admin', (bool) $organization->is_admin);
 
-        // Redirect to home page
+        if ($organization->is_admin) {
+            return redirect()
+                ->route('admin.mengelola-data.index')
+                ->with('status', 'Berhasil masuk sebagai admin.');
+        }
+
         return redirect()
             ->route('beranda')
             ->with('status', 'Berhasil masuk sebagai '.$organization->organization_name.'.');

@@ -8,6 +8,16 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        @php $isAdmin = session('is_admin') === true; @endphp
+        @if($isAdmin)
+            <div class="rounded-2xl border border-teal-200 bg-teal-50/80 px-4 py-3 text-sm text-teal-800 flex items-center justify-between">
+                <span>Profil Admin</span>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">Keluar</button>
+                </form>
+            </div>
+        @endif
         <div class="space-y-1">
             <h1 class="text-3xl font-semibold text-slate-900">Profil Saya</h1>
             <p class="text-sm text-slate-500">Kelola informasi pribadi dan pengaturan akun Anda.</p>
@@ -105,6 +115,7 @@
             </div>
         </section>
 
+        @unless($isAdmin)
         <section class="space-y-6">
             <div class="rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
                 <div class="border-b border-slate-100 px-6 py-4">
@@ -173,6 +184,7 @@
                 </dl>
             </div>
         </section>
+        @endunless
     </div>
 @endsection
 

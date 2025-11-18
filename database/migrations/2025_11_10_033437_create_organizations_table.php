@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('document_path')->nullable()->comment('Path file surat penugasan/kuasa');
             $table->timestamp('email_verified_at')->nullable();
             $table->boolean('is_active')->default(false)->comment('Status aktivasi akun');
+            $table->boolean('is_admin')->default(false)->comment('Akun admin platform');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

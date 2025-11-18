@@ -28,6 +28,7 @@ class Organization extends Model
         'document_path',
         'email_verified_at',
         'is_active',
+        'is_admin',
         'remember_token',
     ];
 
@@ -49,6 +50,7 @@ class Organization extends Model
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'is_admin' => 'boolean',
     ];
 
     /**

@@ -75,11 +75,26 @@ class AdminReviewController extends Controller
             ];
         }
 
-        return view('admin-review', [
+        return view('admin.admin-review', [
             'report' => $reportData,
             'reportType' => $type,
             'reportModel' => $report,
         ]);
+    }
+
+    public function redirectToFirst(Request $request)
+    {
+        $firstItem = ReportItem::where('status', 'pending')->orderByDesc('created_at')->first();
+        if ($firstItem) {
+            return redirect()->route('admin.review.show', ['type' => 'item', 'id' => $firstItem->id]);
+        }
+
+        $firstUser = ReportUser::where('status', 'pending')->orderByDesc('created_at')->first();
+        if ($firstUser) {
+            return redirect()->route('admin.review.show', ['type' => 'user', 'id' => $firstUser->id]);
+        }
+
+        return redirect()->route('admin.mengelola-data.index')->with('status', 'Tidak ada laporan untuk ditinjau.');
     }
 
     /**

@@ -29,9 +29,12 @@
                     <span class="text-neutral-950">NextUse Admin</span>
                 </div>
                 <nav class="hidden md:flex items-center gap-6 text-[#717182]">
-                    <a href="#" class="hover:text-neutral-950">Dashboard</a>
-                    <a href="#" class="hover:text-neutral-950">Reports</a>
-                    <a href="#" class="text-neutral-950">Review</a>
+                    @php
+                        $isKelola = request()->routeIs('admin.mengelola-data.index');
+                        $isTinjau = request()->routeIs('admin.tinjau') || request()->routeIs('admin.review.*');
+                    @endphp
+                    <a href="{{ route('admin.mengelola-data.index') }}" class="{{ $isKelola ? 'text-neutral-950 border-b-2 border-teal-500 font-medium' : 'hover:text-neutral-950' }}">Kelola</a>
+                    <a href="{{ route('admin.tinjau') }}" class="{{ $isTinjau ? 'text-neutral-950 border-b-2 border-teal-500 font-medium' : 'hover:text-neutral-950' }}">Tinjau</a>
                 </nav>
                 <div class="flex items-center gap-3">
                     @if(session('organization_id'))

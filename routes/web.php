@@ -13,6 +13,7 @@ use App\Http\Controllers\Item\UpdateStatusController as ItemUpdateStatusControll
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SellerProfileController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\PostItemController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\CreateReviewController;
 use App\Http\Controllers\ReadReviewController;
 use App\Http\Controllers\AdminReviewController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\MengelolaDataBarang\DestroyItemController as AdminMengelolaDataBarangDestroyItemController;
 use App\Http\Controllers\Admin\MengelolaDataBarang\DestroyUserController as AdminMengelolaDataBarangDestroyUserController;
 use App\Http\Controllers\Admin\MengelolaDataBarang\IndexController as AdminMengelolaDataBarangIndexController;
@@ -43,7 +45,7 @@ Route::get('/syarat-ketentuan', [SyaratKetentuanController::class, 'index'])->na
 
 Route::post('/registrasi', [RegistrasiController::class, 'store'])->name('registrasi.store');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', LogoutController::class)->name('logout');
 
 Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
 Route::get('/items/{id}/edit', ItemEditController::class)->name('items.edit');
@@ -71,6 +73,8 @@ Route::get('/review', [ReadReviewController::class, 'show'])->name('review.read'
 
 Route::get('/admin/review/{type}/{id}', [AdminReviewController::class, 'show'])->name('admin.review.show');
 Route::put('/admin/review/{type}/{id}', [AdminReviewController::class, 'update'])->name('admin.review.update');
+Route::get('/admin/tinjau', [AdminReviewController::class, 'redirectToFirst'])->name('admin.tinjau');
+Route::get('/admin/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications');
 Route::get('/dukung-nextuse', [DonationController::class, 'index'])->name('dukung-nextuse');
 Route::post('/dukung-nextuse', [DonationController::class, 'store'])->name('dukung-nextuse.store');
 

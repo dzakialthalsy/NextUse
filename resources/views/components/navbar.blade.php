@@ -9,14 +9,26 @@
             
             <nav class="hidden md:flex space-x-6 text-sm font-normal">
                 @php
-                    $isInventoryPage = request()->routeIs('inventory.index');
-                    $isPostItemPage = request()->routeIs('post-item.create');
-                    $isChatPage = request()->routeIs('chat.*');
+                    $isAdmin = session('is_admin') === true;
                 @endphp
-                <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage && ! $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
-                <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Inventory</a>
-                <a href="{{ route('post-item.create') }}" class="{{ $isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Post Item</a>
-                <a href="{{ route('chat.index') }}" class="{{ $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Messages</a>
+                @if($isAdmin)
+                    @php
+                        $isKelola = request()->routeIs('admin.mengelola-data.index');
+                        $isTinjau = request()->routeIs('admin.tinjau') || request()->routeIs('admin.review.*');
+                    @endphp
+                    <a href="{{ route('admin.mengelola-data.index') }}" class="{{ $isKelola ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Kelola</a>
+                    <a href="{{ route('admin.tinjau') }}" class="{{ $isTinjau ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Tinjau</a>
+                @else
+                    @php
+                        $isInventoryPage = request()->routeIs('inventory.index');
+                        $isPostItemPage = request()->routeIs('post-item.create');
+                        $isChatPage = request()->routeIs('chat.*');
+                    @endphp
+                    <a href="{{ route('beranda') }}" class="{{ !$isInventoryPage && !$isPostItemPage && ! $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Browse</a>
+                    <a href="{{ route('inventory.index') }}" class="{{ $isInventoryPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Inventory</a>
+                    <a href="{{ route('post-item.create') }}" class="{{ $isPostItemPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Post Item</a>
+                    <a href="{{ route('chat.index') }}" class="{{ $isChatPage ? 'text-gray-900 border-b-2 border-teal-500 font-medium' : 'text-gray-500 hover:text-gray-900' }} transition duration-150">Messages</a>
+                @endif
             </nav>
 
             <div class="flex items-center space-x-3 relative">
@@ -47,7 +59,9 @@
             btn?.addEventListener('click', async () => {
                 dropdown?.classList.toggle('hidden');
                 try {
-                    const resp = await fetch('{{ route('chat.notifications') }}');
+                    const isAdmin = {{ session('is_admin') ? 'true' : 'false' }};
+                    const notifUrl = isAdmin ? '{{ route('admin.notifications') }}' : '{{ route('chat.notifications') }}';
+                    const resp = await fetch(notifUrl);
                     const data = await resp.json();
                     list.innerHTML = '';
                     if (!data || data.length === 0) {
@@ -56,13 +70,17 @@
                     }
                     data.forEach(item => {
                         const el = document.createElement('a');
-                        el.href = '{{ url('/chat') }}/' + item.conversation_id;
+                        const href = item.url ? item.url : ('{{ url('/chat') }}/' + (item.conversation_id||''));
+                        el.href = href;
                         el.className = 'flex items-start gap-3 p-3 hover:bg-gray-50';
+                        const title = item.title || item.name || 'Notifikasi';
+                        const preview = item.preview || '';
+                        const avatarText = (item.avatar || title || 'N').slice(0,1).toUpperCase();
                         el.innerHTML = `
-                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-semibold">${(item.name||'U').slice(0,1).toUpperCase()}</div>
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-semibold">${avatarText}</div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">${item.name}</p>
-                                <p class="text-xs text-gray-500 truncate">${item.preview || 'Pesan baru'}</p>
+                                <p class="text-sm font-medium text-gray-900 truncate">${title}</p>
+                                <p class="text-xs text-gray-500 truncate">${preview}</p>
                             </div>
                             <div class="text-xs text-gray-400">${item.time||''}</div>
                         `;
