@@ -77,6 +77,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::controller(ChatMessageController::class)->group(function () {
     Route::get('/chat', 'index')->name('chat.index');
     Route::get('/chat/{conversationId}', 'show')->name('chat.show');
+    Route::get('/chat/notifications', 'notifications')->name('chat.notifications');
 });
 
 // Chat Routes - Create Operations

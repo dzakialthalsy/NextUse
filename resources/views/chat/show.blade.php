@@ -51,8 +51,19 @@
                                 <img src="{{ asset('storage/' . $message->attachment_path) }}" alt="Lampiran" class="rounded-xl max-h-60 object-cover border {{ $isCurrentUser ? 'border-white/30' : 'border-slate-100' }}">
                             @endif
                         </div>
-                        <div class="flex items-center gap-2 text-[10px] text-slate-400">
+                        <div class="flex items-center gap-3 text-[10px] text-slate-400">
                             <span>{{ $timeLabel }}</span>
+                            @if ($isCurrentUser)
+                                <span>• {{ $message->is_read ? 'Dibaca' : 'Terkirim' }}</span>
+                                <form action="{{ route('chat.destroy', $message) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pesan ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full border border-slate-200 hover:bg-slate-50 {{ $isCurrentUser ? 'text-white/80 border-white/40 hover:bg-white/10' : '' }}">
+                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 7h12M9 7v10m6-10v10M4 7h16l-1 13a2 2 0 01-2 2H7a2 2 0 01-2-2L4 7z" /></svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>

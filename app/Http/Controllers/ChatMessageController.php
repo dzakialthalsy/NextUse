@@ -178,4 +178,37 @@ class ChatMessageController extends Controller
             ->route('chat.show', $conversationMeta->conversation_id)
             ->with('status', 'Pesan berhasil dikirim.');
     }
+    /**
+     * Notifikasi ringkas pesan terbaru untuk dropdown.
+     */
+    public function notifications(Request $request)
+    {
+        $organizationId = $request->session()->get('organization_id');
+
+        if (! $organizationId) {
+            return response()->json([]);
+        }
+
+        $messages = ChatMessage::query()
+            ->where(function ($query) use ($organizationId) {
+                $query->where('buyer_id', $organizationId)
+                    ->orWhere('seller_id', $organizationId);
+            })
+            ->orderByDesc('sent_at')
+            ->limit(5)
+            ->get();
+
+        $items = $messages->map(function (ChatMessage $m) use ($organizationId) {
+            $contactName = $organizationId === $m->seller_id ? $m->buyer_name : $m->seller_name;
+            return [
+                'conversation_id' => $m->conversation_id,
+                'name' => $contactName ?? 'Pengguna',
+                'preview' => $m->body ?: ($m->attachment_path ? '📎 Foto dikirim' : ''),
+                'time' => optional($m->sent_at ?? $m->created_at)?->diffForHumans(),
+                'unread' => ! $m->is_read,
+            ];
+        });
+
+        return response()->json($items);
+    }
 }
