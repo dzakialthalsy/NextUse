@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\MengelolaDataBarang;
 
+use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\Organization;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class MengelolaDataBarangController extends Controller
+class IndexController extends Controller
 {
     /**
      * Tampilkan dashboard pengelolaan data pengguna & barang.
      */
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
         $searchUser = $request->query('search_user');
         $searchItem = $request->query('search_item');
@@ -48,25 +48,6 @@ class MengelolaDataBarangController extends Controller
             ],
         ]);
     }
-
-    /**
-     * Hapus data organisasi.
-     */
-    public function destroyUser(Organization $organization): RedirectResponse
-    {
-        $organization->delete();
-
-        return back()->with('success', 'Data pengguna berhasil dihapus.');
-    }
-
-    /**
-     * Hapus data barang.
-     */
-    public function destroyItem(Item $item): RedirectResponse
-    {
-        $item->delete();
-
-        return back()->with('success', 'Data barang berhasil dihapus.');
-    }
 }
+
 
