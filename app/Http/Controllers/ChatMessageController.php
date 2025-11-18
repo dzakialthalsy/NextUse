@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChatMessage;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ChatMessageController extends Controller
@@ -32,23 +34,31 @@ class ChatMessageController extends Controller
         if ($latestMessageIds->isEmpty()) {
             $latestMessages = collect();
         } else {
-            $latestMessages = $conversationQuery->whereIn('id', $latestMessageIds)->orderByDesc('sent_at')->get();
+            $latestMessages = $conversationQuery
+                ->whereIn('id', $latestMessageIds)
+                ->orderByDesc('sent_at')
+                ->get();
         }
 
         $conversations = $latestMessages
-            ->sortByDesc('sent_at')
+            ->sortByDesc(fn (ChatMessage $message) => $message->sent_at ?? $message->created_at)
             ->map(function (ChatMessage $message) use ($organizationId) {
                 $contactName = $organizationId === $message->seller_id
                     ? $message->buyer_name
                     : $message->seller_name;
+
+                $lastMessagePreview = $message->body ?: ($message->attachment_path ? '📎 Foto dikirim' : '');
+                $timestamp = optional($message->sent_at ?? $message->created_at)
+                    ?->timezone(config('app.timezone'))
+                    ?->diffForHumans();
 
                 return [
                     'id' => $message->conversation_id,
                     'name' => $contactName ?? 'Pengguna',
                     'avatar' => strtoupper(substr($contactName ?? 'U', 0, 1)),
                     'item' => $message->item_title ?? '-',
-                    'last_message' => $message->body,
-                    'timestamp' => optional($message->sent_at)->diffForHumans(),
+                    'last_message' => $lastMessagePreview,
+                    'timestamp' => $timestamp,
                     'unread' => $message->is_read ? 0 : 1,
                 ];
             })
@@ -107,6 +117,65 @@ class ChatMessageController extends Controller
             'conversation' => $conversation,
             'messages' => $messages,
             'currentOrganizationId' => $organizationId,
+            'meta' => $meta,
         ]);
+    }
+
+    /**
+     * Menyimpan pesan baru di dalam percakapan.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $organizationId = $request->session()->get('organization_id');
+
+        if (! $organizationId) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $validated = $request->validate([
+            'conversation_id' => ['required', 'string'],
+            'body' => ['nullable', 'string', 'max:1000', 'required_without:attachment'],
+            'attachment' => ['nullable', 'image', 'max:5120'],
+        ]);
+
+        $conversationMeta = ChatMessage::where('conversation_id', $validated['conversation_id'])->first();
+
+        if (! $conversationMeta) {
+            return back()->with('error', 'Percakapan tidak ditemukan.');
+        }
+
+        if ($organizationId !== $conversationMeta->seller_id && $organizationId !== $conversationMeta->buyer_id) {
+            abort(403);
+        }
+
+        $senderName = $request->session()->get('organization_name', 'Pengguna NextUse');
+        $isSeller = $organizationId === $conversationMeta->seller_id;
+
+        $data = [
+            'conversation_id' => $conversationMeta->conversation_id,
+            'item_id' => $conversationMeta->item_id,
+            'seller_id' => $conversationMeta->seller_id,
+            'buyer_id' => $conversationMeta->buyer_id,
+            'seller_name' => $conversationMeta->seller_name,
+            'buyer_name' => $conversationMeta->buyer_name,
+            'item_title' => $conversationMeta->item_title,
+            'sender_name' => $senderName,
+            'sender_role' => $isSeller ? 'Pemilik' : 'Pembeli',
+            'body' => $validated['body'] ?? '',
+            'is_owner' => $isSeller,
+            'is_read' => false,
+            'sent_at' => now(config('app.timezone')),
+        ];
+
+        if ($request->hasFile('attachment')) {
+            $path = $request->file('attachment')->store('chat-attachments', 'public');
+            $data['attachment_path'] = $path;
+        }
+
+        ChatMessage::create($data);
+
+        return redirect()
+            ->route('chat.show', $conversationMeta->conversation_id)
+            ->with('status', 'Pesan berhasil dikirim.');
     }
 }

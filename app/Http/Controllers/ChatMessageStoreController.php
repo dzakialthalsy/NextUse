@@ -52,7 +52,7 @@ class ChatMessageStoreController extends Controller
         } else {
             $conversationId = (string) Str::uuid();
 
-            ChatMessage::create([
+        ChatMessage::create([
                 'conversation_id' => $conversationId,
                 'item_id' => $item->id,
                 'seller_id' => $seller->id,
@@ -65,7 +65,7 @@ class ChatMessageStoreController extends Controller
                 'body' => 'Halo, saya tertarik dengan ' . $item->judul . '.',
                 'is_owner' => false,
                 'is_read' => false,
-                'sent_at' => now(),
+            'sent_at' => now(config('app.timezone')),
             ]);
         }
 
@@ -93,7 +93,8 @@ class ChatMessageStoreController extends Controller
     {
         $payload = $request->validate([
             'conversation_id' => ['required', 'string'],
-            'body' => ['required', 'string', 'max:1000'],
+            'body' => ['nullable', 'string', 'max:1000', 'required_without:attachment'],
+            'attachment' => ['nullable', 'image', 'max:5120'],
         ]);
 
         $conversation = ChatMessage::where('conversation_id', $payload['conversation_id'])->firstOrFail();
@@ -105,6 +106,11 @@ class ChatMessageStoreController extends Controller
 
         $isSeller = $organizationId === $conversation->seller_id;
 
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('chat-attachments', 'public');
+        }
+
         return [
             'conversation_id' => $conversation->conversation_id,
             'item_id' => $conversation->item_id,
@@ -115,10 +121,11 @@ class ChatMessageStoreController extends Controller
             'item_title' => $conversation->item_title,
             'sender_name' => $isSeller ? $conversation->seller_name : $conversation->buyer_name,
             'sender_role' => $isSeller ? 'seller' : 'buyer',
-            'body' => $payload['body'],
+            'body' => $payload['body'] ?? '',
+            'attachment_path' => $attachmentPath,
             'is_owner' => $isSeller,
             'is_read' => false,
-            'sent_at' => now(),
+            'sent_at' => now(config('app.timezone')),
         ];
     }
 }

@@ -12,7 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            
+            if (Schema::hasColumn('items', 'user_id')) {
+                $table->dropForeign(['user_id']);
+                $table->dropColumn('user_id');
+            }
+
+            if (! Schema::hasColumn('items', 'organization_id')) {
+                $table->foreignId('organization_id')
+                    ->after('id')
+                    ->constrained('organizations')
+                    ->cascadeOnDelete();
+            }
         });
     }
 
@@ -22,12 +32,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('items', function (Blueprint $table) {
-            // Drop foreign key constraint for organization_id
-            $table->dropForeign(['organization_id']);
-            // Drop organization_id column
-            $table->dropColumn('organization_id');
-            // Add user_id column back
-            $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
+            if (Schema::hasColumn('items', 'organization_id')) {
+                $table->dropForeign(['organization_id']);
+                $table->dropColumn('organization_id');
+            }
+
+            if (! Schema::hasColumn('items', 'user_id')) {
+                $table->foreignId('user_id')
+                    ->after('id')
+                    ->constrained('users')
+                    ->cascadeOnDelete();
+            }
         });
     }
 };

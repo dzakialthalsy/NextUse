@@ -96,3 +96,4 @@ Route::controller(ProfileController::class)->group(function () {
     Route::put('/profile/{profile}', 'update')->name('profile.update');
     Route::delete('/profile/{profile}', 'destroy')->name('profile.destroy');
 });
+Route::get('/profile/organization/{organization}', [ProfileController::class, 'showPublic'])->name('profile.public');
