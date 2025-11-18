@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,10 +18,15 @@ class ProfileController extends Controller
         }
 
         $profile = $this->profileFor($request);
+        $organizationId = (int) $request->session()->get('organization_id');
+
+        // Hitung statistik dari database
+        $stats = $this->calculateStats($organizationId);
 
         return view('profile.show', [
             'profile' => $profile,
             'organizationName' => $request->session()->get('organization_name'),
+            'stats' => $stats,
         ]);
     }
 
@@ -202,6 +208,35 @@ class ProfileController extends Controller
                 'tiktok' => 'https://tiktok.com/@nextuse.id',
             ],
             'joined_at' => now()->subYears(2),
+        ];
+    }
+
+    /**
+     * Hitung statistik dari database untuk organization.
+     */
+    protected function calculateStats(int $organizationId): array
+    {
+        // Items Posted: semua item yang bukan draft
+        $itemsPosted = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->count();
+
+        // Giveaway: item yang preferensi mengandung 'giveaway'
+        $giveaway = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->whereJsonContains('preferensi', 'giveaway')
+            ->count();
+
+        // Trades: item yang status = 'habis' (sudah selesai/terjual)
+        $trades = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->where('status', 'habis')
+            ->count();
+
+        return [
+            'items_posted' => $itemsPosted,
+            'giveaway' => $giveaway,
+            'trades' => $trades,
         ];
     }
 }

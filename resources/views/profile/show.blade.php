@@ -85,15 +85,15 @@
                 <div class="mt-4 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
                         <p class="text-xs text-slate-500">Items Posted</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->completed_deals }}</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['items_posted'] ?? 0 }}</p>
                     </div>
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                        <p class="text-xs text-slate-500">Items Borrowed</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->followers_count }}</p>
+                        <p class="text-xs text-slate-500">Giveaway</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['giveaway'] ?? 0 }}</p>
                     </div>
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
                         <p class="text-xs text-slate-500">Trades</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->following_count }}</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['trades'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
