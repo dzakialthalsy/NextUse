@@ -78,7 +78,7 @@
                                 <p class="text-sm text-gray-500">Dibagikan oleh</p>
                                 <a href="{{ route('profile.public', $item->organization) }}"
                                    class="text-lg font-semibold text-gray-900 hover:text-teal-600 transition">
-                                    {{ $item->organization->organization_name ?? 'Pengguna NextUse' }}
+                                    {{ $item->organization->profile->full_name ?? $item->organization->organization_name ?? 'Pengguna NextUse' }}
                                 </a>
                                 <p class="text-sm text-gray-500">{{ $item->organization->organization_type ?? 'Organisasi' }}</p>
                             </div>

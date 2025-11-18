@@ -73,6 +73,13 @@ class ProfileController extends Controller
 
         $profile->update($data);
 
+        $organization = Organization::find($profile->organization_id);
+        if ($organization) {
+            $organization->organization_name = $data['full_name'];
+            $organization->save();
+            $request->session()->put('organization_name', $data['full_name']);
+        }
+
         return redirect()
             ->route('profile.index')
             ->with('status', 'Profil berhasil diperbarui.');

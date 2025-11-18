@@ -203,7 +203,7 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-        $item = Item::with('organization')
+        $item = Item::with(['organization.profile'])
             ->where('is_draft', false)
             ->findOrFail($id);
 
