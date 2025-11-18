@@ -13,8 +13,11 @@ class RegistrasiController extends Controller
     /**
      * Tampilkan halaman registrasi organisasi.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->session()->has('organization_id')) {
+            return redirect()->route('beranda');
+        }
         return view('registrasi');
     }
 

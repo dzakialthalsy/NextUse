@@ -1,27 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Posting Barang - NextUse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @layer utilities {
-            .animate-spin {
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col bg-gray-50">
-    <!-- Header -->
-    @include('components.navbar')
+@extends('layouts.app')
 
-    <main class="flex-1 py-8 px-4 sm:px-6">
+@section('title', 'Posting Barang - NextUse')
+
+@section('content')
+    <div class="py-8 px-4 sm:px-6">
         <div class="max-w-[1200px] mx-auto">
             <!-- Breadcrumb -->
             <nav class="mb-6" aria-label="Breadcrumb">
@@ -458,15 +440,10 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+@endsection
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-200 py-6 px-4 sm:px-6 mt-12">
-        <div class="max-w-[1200px] mx-auto text-center text-sm text-gray-500">
-            <p>&copy; 2025 NextUse. Platform berbagi dan barter barang gratis.</p>
-        </div>
-    </footer>
-
+@push('scripts')
     <script>
         function updateCharCount(textarea) {
             const count = textarea.value.length;
@@ -542,6 +519,5 @@
             }
         });
     </script>
-</body>
-</html>
+@endpush
 

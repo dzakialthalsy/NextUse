@@ -99,7 +99,7 @@ class ReportItemController extends Controller
         ]);
 
         return redirect()
-            ->back()
+            ->route('beranda')
             ->with('status', 'Report postingan berhasil dikirim. Tim kami akan meninjau laporan Anda segera.');
     }
 }

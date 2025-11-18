@@ -1,6 +1,6 @@
 <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100 h-[64.67px]">
         <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-6 h-full flex justify-between items-center">
-            <a href="#" class="flex items-center space-x-2">
+            <a href="{{ route('beranda') }}" class="flex items-center space-x-2">
                 <div class="w-8 h-8 rounded-lg main-gradient flex items-center justify-center">
                     <span class="font-bold text-white text-base">N</span>
                 </div>

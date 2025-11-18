@@ -96,7 +96,7 @@ class ReportUserController extends Controller
         ]);
 
         return redirect()
-            ->back()
+            ->route('beranda')
             ->with('status', 'Report pengguna berhasil dikirim. Tim kami akan meninjau laporan Anda segera.');
     }
 }

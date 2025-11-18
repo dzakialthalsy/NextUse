@@ -13,8 +13,12 @@ class LoginController extends Controller
     /**
      * Tampilkan halaman login organisasi.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->session()->has('organization_id')) {
+            return redirect()->route('beranda');
+        }
+
         return view('login');
     }
 
@@ -83,7 +87,7 @@ class LoginController extends Controller
 
         // Redirect to home page
         return redirect()
-            ->route('home')
+            ->route('beranda')
             ->with('status', 'Berhasil masuk sebagai '.$organization->organization_name.'.');
     }
 

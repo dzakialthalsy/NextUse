@@ -1,60 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporkan Pengguna - NextUse</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @layer utilities {
-            .animate-spin {
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-teal-50 via-green-50 to-emerald-50 flex flex-col">
-    <!-- Header -->
-    <header class="bg-white border-b border-[rgba(0,0,0,0.1)] sticky top-0 z-50">
-        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-gradient-to-r from-[#00bba7] to-[#009966] rounded-lg flex items-center justify-center">
-                        <span class="text-white">N</span>
-                    </div>
-                    <span class="text-neutral-950">NextUse</span>
-                </div>
-                <nav class="hidden md:flex items-center gap-6 text-[#717182]">
-                    <a href="#" class="hover:text-neutral-950">Browse</a>
-                    <a href="#" class="hover:text-neutral-950">Post Item</a>
-                    <a href="#" class="hover:text-neutral-950">Messages</a>
-                    <a href="#" class="text-neutral-950">Profile</a>
-                </nav>
-                <div class="flex items-center gap-3">
-                    @if(session('organization_id'))
-                        <span class="text-sm text-[#717182] hidden md:block">{{ session('organization_name') }}</span>
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="px-3 py-1.5 text-sm text-[#717182] hover:text-neutral-950 rounded-lg">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="px-3 py-1.5 text-sm text-neutral-950 hover:bg-gray-50 rounded-lg">
-                            Masuk
-                        </a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <!-- Main Content -->
-    <main class="flex-1 py-8 px-4 sm:px-6">
+@section('title', 'Laporkan Pengguna - NextUse')
+
+@section('content')
+    <div class="min-h-[calc(100vh-180px)] bg-gradient-to-br from-teal-50 via-green-50 to-emerald-50 py-8 px-4 sm:px-6">
         <div class="max-w-[1200px] mx-auto">
             <!-- Breadcrumb -->
             <nav class="mb-6 flex items-center gap-2 text-sm text-[#717182]">
@@ -265,7 +214,7 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Sticky Submit Bar - Desktop -->
     <div class="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t border-[rgba(0,0,0,0.1)] shadow-lg z-40">
@@ -294,13 +243,9 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="border-t border-[rgba(0,0,0,0.1)] py-6 px-4 sm:px-6 mt-12 mb-20 lg:mb-0">
-        <div class="max-w-[1200px] mx-auto text-center text-sm text-[#717182]">
-            <p>&copy; 2025 NextUse. Platform berbagi dan barter barang gratis.</p>
-        </div>
-    </footer>
+@endsection
 
+@push('scripts')
     <script>
         // Character counter
         const deskripsiField = document.getElementById('deskripsi');
@@ -441,6 +386,5 @@
             if (submitLoaderDesktop) submitLoaderDesktop.classList.remove('hidden');
         });
     </script>
-</body>
-</html>
+@endpush
 
