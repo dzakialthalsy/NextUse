@@ -427,9 +427,25 @@
                     </div>
                 </div>
 
-                <!-- Preview Card - Desktop Only -->
+                <!-- Preview & Profil Pengunggah - Desktop Only -->
                 <div class="hidden lg:block col-span-5">
                     <div class="sticky top-24">
+                        @isset($profile)
+                            <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-4">
+                                <h3 class="text-lg font-semibold mb-3 text-gray-900">Profil Pengunggah</h3>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-semibold">
+                                        {{ strtoupper(mb_substr($profile->full_name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ $profile->full_name }}</p>
+                                        @if ($profile->location)
+                                            <p class="text-xs text-gray-500">📍 {{ $profile->location }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endisset
                         <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                             <h3 class="text-lg font-semibold mb-4 text-gray-900">Preview</h3>
                             <div class="space-y-4">

@@ -4,7 +4,14 @@ use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ChatMessageStoreController;
 use App\Http\Controllers\ChatMessageDeleteController;
 use App\Http\Controllers\FilterController;
+use App\Http\Controllers\Item\BulkDestroyController as ItemBulkDestroyController;
+use App\Http\Controllers\Item\DestroyController as ItemDestroyController;
+use App\Http\Controllers\Item\EditController as ItemEditController;
+use App\Http\Controllers\Item\ShowController as ItemShowController;
+use App\Http\Controllers\Item\UpdateController as ItemUpdateController;
+use App\Http\Controllers\Item\UpdateStatusController as ItemUpdateStatusController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\SellerProfileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostItemController;
 use App\Http\Controllers\ProfileController;
@@ -39,16 +46,15 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.aut
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
-Route::get('/items/{id}/edit', [ItemController::class, 'edit'])->name('items.edit');
-Route::put('/items/{id}', [ItemController::class, 'update'])->name('items.update');
-Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
-Route::post('/items/update-status', [ItemController::class, 'updateStatus'])->name('items.update-status');
-Route::post('/items/bulk-delete', [ItemController::class, 'bulkDestroy'])->name('items.bulk-delete');
-Route::get('/items/{id}', [ItemController::class, 'show'])->name('items.show');
+Route::get('/items/{id}/edit', ItemEditController::class)->name('items.edit');
+Route::put('/items/{id}', ItemUpdateController::class)->name('items.update');
+Route::delete('/items/{id}', ItemDestroyController::class)->name('items.destroy');
+Route::post('/items/update-status', ItemUpdateStatusController::class)->name('items.update-status');
+Route::post('/items/bulk-delete', ItemBulkDestroyController::class)->name('items.bulk-delete');
+Route::get('/items/{id}', ItemShowController::class)->name('items.show');
 
 Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
 Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');
-Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->name('post-item.save-draft');
 
 Route::get('/report-user', [ReportUserController::class, 'create'])->name('report-user.create');
 Route::post('/report-user', [ReportUserController::class, 'store'])->name('report-user.store');
@@ -58,7 +64,6 @@ Route::post('/report-item', [ReportItemController::class, 'store'])->name('repor
 
 Route::get('/post-item', [PostItemController::class, 'create'])->name('post-item.create');
 Route::post('/post-item', [PostItemController::class, 'store'])->name('post-item.store');
-Route::post('/post-item/save-draft', [PostItemController::class, 'saveDraft'])->name('post-item.save-draft');
 
 Route::get('/review/create', [CreateReviewController::class, 'create'])->name('review.create');
 Route::post('/review/create', [CreateReviewController::class, 'store'])->name('review.create.store');
@@ -68,6 +73,8 @@ Route::get('/admin/review/{type}/{id}', [AdminReviewController::class, 'show'])-
 Route::put('/admin/review/{type}/{id}', [AdminReviewController::class, 'update'])->name('admin.review.update');
 Route::get('/dukung-nextuse', [DonationController::class, 'index'])->name('dukung-nextuse');
 Route::post('/dukung-nextuse', [DonationController::class, 'store'])->name('dukung-nextuse.store');
+
+Route::get('/seller/{organization}', SellerProfileController::class)->name('seller.profile.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/mengelola-data-barang', AdminMengelolaDataBarangIndexController::class)->name('mengelola-data.index');

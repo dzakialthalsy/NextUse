@@ -98,6 +98,13 @@ class ProfileController extends Controller
     {
         $organizationId = (int) $request->session()->get('organization_id');
 
+        if (! \Illuminate\Support\Facades\Schema::hasTable('profiles')) {
+            // Jika tabel belum ada (mis. sebelum migrate), kembalikan instance Profile dummy
+            return new Profile($this->defaultProfileAttributes($request) + [
+                'organization_id' => $organizationId,
+            ]);
+        }
+
         return Profile::firstOrCreate(
             ['organization_id' => $organizationId],
             $this->defaultProfileAttributes($request)
