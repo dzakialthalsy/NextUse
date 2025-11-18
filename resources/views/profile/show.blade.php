@@ -2,6 +2,10 @@
 
 @section('title', 'Profil Saya - NextUse')
 
+@php
+    use Illuminate\Support\Str;
+@endphp
+
 @section('content')
     <div class="max-w-5xl mx-auto px-4 py-10 space-y-8">
         <div class="space-y-1">
@@ -87,15 +91,15 @@
                 <div class="mt-4 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
                         <p class="text-xs text-slate-500">Items Posted</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->completed_deals }}</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['items_posted'] ?? 0 }}</p>
                     </div>
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                        <p class="text-xs text-slate-500">Items Borrowed</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->followers_count }}</p>
+                        <p class="text-xs text-slate-500">Giveaway</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['giveaway'] ?? 0 }}</p>
                     </div>
                     <div class="rounded-2xl bg-slate-50 px-4 py-3">
                         <p class="text-xs text-slate-500">Trades</p>
-                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $profile->following_count }}</p>
+                        <p class="mt-2 text-2xl font-semibold text-slate-900">{{ $stats['trades'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -105,30 +109,22 @@
             <div class="rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
                 <div class="border-b border-slate-100 px-6 py-4">
                     <h2 class="text-sm font-semibold text-slate-900">Aktivitas Terakhir</h2>
-                    <p class="text-xs text-slate-500">Riwayat aktivitas Anda di NextUse</p>
+                    <p class="text-xs text-slate-500">Riwayat aktivitas terbaru Anda di NextUse</p>
                 </div>
                 <ul class="divide-y divide-slate-100 text-sm text-slate-700">
-                    <li class="flex items-start gap-3 px-6 py-4">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <div>
-                            <p>Memposting item <span class="font-semibold">"Kamera Digital Canon"</span></p>
-                            <p class="text-xs text-slate-400">2 jam yang lalu</p>
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3 px-6 py-4">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <div>
-                            <p>Meminjam <span class="font-semibold">"Buku Programming Python"</span></p>
-                            <p class="text-xs text-slate-400">1 hari yang lalu</p>
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3 px-6 py-4">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-sky-500"></span>
-                        <div>
-                            <p>Menyelesaikan transaksi barter</p>
-                            <p class="text-xs text-slate-400">3 hari yang lalu</p>
-                        </div>
-                    </li>
+                    @forelse ($activities as $activity)
+                        <li class="flex items-start gap-3 px-6 py-4">
+                            <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
+                            <div class="space-y-1">
+                                <p>Memposting item <span class="font-semibold">"{{ $activity->judul }}"</span></p>
+                                <p class="text-xs text-slate-400">{{ $activity->created_at?->diffForHumans() }}</p>
+                            </div>
+                        </li>
+                    @empty
+                        <li class="px-6 py-4 text-sm text-slate-500">
+                            Belum ada aktivitas terbaru. Mulai dengan memposting item pertamamu!
+                        </li>
+                    @endforelse
                 </ul>
             </div>
 
@@ -146,7 +142,7 @@
                             </span>
                             Review masuk
                         </span>
-                        <span class="text-xs text-slate-400">Klik untuk melihat</span>
+                        <span class="text-xs text-slate-400">Klik untuk melihat halaman review</span>
                     </a>
                     <button type="button" class="flex w-full items-center justify-between px-6 py-4 hover:bg-rose-50" onclick="window.dispatchEvent(new CustomEvent('open-logout-modal'))">
                         <span class="flex items-center gap-3 text-sm font-semibold text-rose-600">
@@ -170,15 +166,9 @@
                         <dt class="text-slate-500">Verifikasi Email</dt>
                         <dd class="text-emerald-600 font-semibold">Terverifikasi</dd>
                     </div>
-                    <div class="flex flex-col gap-3 pt-2">
-                        <div class="flex items-center justify-between">
-                            <dt class="text-slate-500">Tipe Akun</dt>
-                            <dd class="text-slate-700">Gratis</dd>
-                        </div>
-                        <button type="button"
-                            class="w-full rounded-full border border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-50">
-                            Upgrade ke Premium
-                        </button>
+                    <div class="flex items-center justify-between pt-2">
+                        <dt class="text-slate-500">Tipe Akun</dt>
+                        <dd class="text-slate-700">Gratis</dd>
                     </div>
                 </dl>
             </div>

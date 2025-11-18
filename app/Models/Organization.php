@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Hash;
 
 class Organization extends Model
@@ -81,5 +82,10 @@ class Organization extends Model
     public function reviewsReceived(): HasMany
     {
         return $this->hasMany(Review::class, 'reviewed_organization_id');
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 }

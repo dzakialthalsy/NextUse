@@ -19,6 +19,7 @@ class ChatMessage extends Model
         'sender_name',
         'sender_role',
         'body',
+        'attachment_path',
         'is_owner',
         'is_read',
         'sent_at',

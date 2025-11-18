@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
+use App\Models\Organization;
 use App\Models\Profile;
+use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,10 +20,17 @@ class ProfileController extends Controller
         }
 
         $profile = $this->profileFor($request);
+        $organizationId = (int) $request->session()->get('organization_id');
+
+        // Hitung statistik dan aktivitas untuk pemilik akun
+        $stats = $this->calculateStats($organizationId);
+        $activities = $this->recentActivities($organizationId);
 
         return view('profile.show', [
             'profile' => $profile,
             'organizationName' => $request->session()->get('organization_name'),
+            'stats' => $stats,
+            'activities' => $activities,
         ]);
     }
 
@@ -62,6 +72,13 @@ class ProfileController extends Controller
         }
 
         $profile->update($data);
+
+        $organization = Organization::find($profile->organization_id);
+        if ($organization) {
+            $organization->organization_name = $data['full_name'];
+            $organization->save();
+            $request->session()->put('organization_name', $data['full_name']);
+        }
 
         return redirect()
             ->route('profile.index')
@@ -107,7 +124,7 @@ class ProfileController extends Controller
 
         return Profile::firstOrCreate(
             ['organization_id' => $organizationId],
-            $this->defaultProfileAttributes($request)
+            $this->defaultProfileAttributes($request->session()->get('organization_name'))
         );
     }
 
@@ -181,9 +198,9 @@ class ProfileController extends Controller
             ->all();
     }
 
-    protected function defaultProfileAttributes(Request $request): array
+    protected function defaultProfileAttributes(?string $orgName = null): array
     {
-        $orgName = $request->session()->get('organization_name', 'NextUse Partner');
+        $orgName = $orgName ?: 'NextUse Partner';
 
         return [
             'full_name' => $orgName,
@@ -210,5 +227,88 @@ class ProfileController extends Controller
             ],
             'joined_at' => now()->subYears(2),
         ];
+    }
+
+    /**
+     * Hitung statistik dari database untuk organization.
+     */
+    protected function calculateStats(int $organizationId): array
+    {
+        // Items Posted: semua item yang bukan draft
+        $itemsPosted = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->count();
+
+        // Giveaway: item yang preferensi mengandung 'giveaway'
+        $giveaway = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->whereJsonContains('preferensi', 'giveaway')
+            ->count();
+
+        // Trades: item yang preferensi mengandung barter
+        $trades = Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->whereJsonContains('preferensi', 'barter')
+            ->count();
+
+        return [
+            'items_posted' => $itemsPosted,
+            'giveaway' => $giveaway,
+            'trades' => $trades,
+        ];
+    }
+
+    protected function recentActivities(int $organizationId)
+    {
+        return Item::where('organization_id', $organizationId)
+            ->where('is_draft', false)
+            ->latest()
+            ->take(5)
+            ->get(['id', 'judul', 'created_at']);
+    }
+
+    protected function reviewSummary(int $organizationId): array
+    {
+        $baseQuery = Review::where('reviewed_organization_id', $organizationId);
+        $totalReviews = (clone $baseQuery)->count();
+        $averageRating = $totalReviews ? round((clone $baseQuery)->avg('rating'), 1) : 0;
+        $distribution = Review::where('reviewed_organization_id', $organizationId)
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+        $latestReviews = Review::with('reviewer:id,organization_name')
+            ->where('reviewed_organization_id', $organizationId)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return [
+            'total' => $totalReviews,
+            'average' => $averageRating,
+            'distribution' => $distribution,
+            'latest' => $latestReviews,
+        ];
+    }
+
+    /**
+     * Tampilan profil publik untuk organisasi lain.
+     */
+    public function showPublic(Organization $organization): View
+    {
+        $profile = Profile::firstOrCreate(
+            ['organization_id' => $organization->id],
+            $this->defaultProfileAttributes($organization->organization_name)
+        );
+
+        $stats = $this->calculateStats($organization->id);
+        $reviewStats = $this->reviewSummary($organization->id);
+
+        return view('profile.public', [
+            'organization' => $organization,
+            'profile' => $profile,
+            'stats' => $stats,
+            'reviewStats' => $reviewStats,
+        ]);
     }
 }
